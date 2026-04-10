@@ -54,7 +54,7 @@ Status	   = git status
 # Select the appropriate target (removing the ones not needed).
 # To add a further target to the template, append the basename of the .tex file here
 TexFiles = $(basename $(wildcard *.tex))
-Targets    = thesis paper report simple
+Targets    = thesis
 
 
 # CONFIGURATION OPTIONS
@@ -96,8 +96,7 @@ Txt = $(addsuffix .txt, $(Targets))
 
 .PHONY: FORCE
 
-# Remove this after reading instructions
-tmp_all:
+
 
 all: pdf
 diff: diff_pdf

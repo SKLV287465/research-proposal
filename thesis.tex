@@ -1,5 +1,4 @@
 \newif \ifDraft         \Draftfalse    % draft version: shows comments
-\newif \ifHDR		\HDRtrue
 
 %%%% Configuration stuff
 \Drafttrue
@@ -11,7 +10,7 @@
 % U/G thesis, so it's a good idea to remove that \if and its false branches...
 
 
-\documentclass[\ifHDR hdr\else undergrad\fi, \ifDraft draft\else final\fi, \Spacing]{unswthesis}
+\documentclass[hdr, \ifDraft draft\else final\fi, \Spacing]{unswthesis}
 
 \usepackage{verbatim}           % for comment environment (eats up contents)
 \newcommand{\code}[1]{\texttt{#1}}
@@ -25,6 +24,8 @@
 \usepackage{colortbl}
 \usepackage{ltablex}
 \usepackage{multirow}
+\usepackage{subfiles}
+\usepackage{xcolor}
 
 
 \usepackage[final]{listings}    % draft will suppress listings!
@@ -122,14 +123,12 @@
 \raggedbottom
 
 \thesisfaculty{Faculty of Engineering}
-\thesisschool{\ifHDR\else Trustworthy Systems Group\\\fi
+\thesisschool{
   School of Computer Science \& Engineering}
-\thesissupervisor{THE SUPERVISOR}
-\ifHDR
-   \thesisdegree{Doctor of Philosophy} % or \thesisdegree{Master of Philosophy}
-\else
-   \thesisdegree{Batchlette of Something}
-\fi
+\thesissupervisor{Gernot Heiser, Kevin Elphinstone}
+
+\thesisdegree{Master of Philosophy}
+
 \thesisdate{2025-02-30}
 
 %\ThesisFamilyName{LASTNAME}
@@ -137,19 +136,10 @@
 %\ThesisOtherNames{MIDDLENAME} %if any, set to {} if not used
 %\ThesisAbbreviatedDegree{PhD}
 
-\thesistitle{THE TITLE OF MY THESIS}
-\thesisZid{z1234567}
+\thesistitle{Performance Limits of a Microkernel-Based System}
+\thesisZid{z5479929}
 
-\ifHDR
-\else
-  \thesistopic{42}
-\fi
-
-\thesisauthor{FIRST MIDDLE LASTNAME}
-
-\begin{ThesisAbstract}
-  This is the abstract of my thesis.
-\end{ThesisAbstract}
+\thesisauthor{Joshua Jooeon Shim}
 
 
 \newacronym{api}{API}{application programming interface}
@@ -181,15 +171,11 @@
 \frontmatter
 \maketitle
 
-\chapter{Abstract}
-
-The abstract.
 
 \chapter{Acknowledgements}
 
 This section should not exceed one page.
 
-\ifHDR
 \textbf{Scholarship and/or Funding - Required}\\
 Candidates in receipt of an Australian Government RTP stipend or RTP fees offset must acknowledge the Australian Government's contribution during and after completion of the HDR program. The acknowledgement must include the mention of support through the Australian Government Research
 Training Program as follows:
@@ -214,29 +200,6 @@ at UNSW}.
 Please refer to the \href{https://www.unsw.edu.au/content/dam/pdfs/research/higher-degree-research/thesis-format-guide.pdf} {Thesis Format Guide} for details.
 
 
-\chapter{List of Publications and Presentations}
-
-\section*{List of Publications}
- 
-\begin{itemize}
-    \item paper 1
-    \item paper 2
-\end{itemize}
-
-\section*{List of Presentations}
-
-\subsection*{Oral presentations:} 
-
-\begin{itemize}
-\item presentation 1
-\end{itemize}
-
-\subsection*{Poster presentations:}
-
-\begin{itemize}
-    \item presentation 2
-\end{itemize}
-\fi
 
 \setcounter{tocdepth}{3}
 \tableofcontents
@@ -301,7 +264,13 @@ system (\gls{os}). \glspl{os} need device drivers to do \gls{io}.
 
 \chapter{Literature Review}\label{s:lit_review}
 
-Here is the full, detailed lit review.
+\subfile{sections/literature_review.tex}
+
+\chapter{Methodology}\label{s:methodology}
+
+\chapter{Research Plan}\label{s:research_plan}
+
+\chapter{Conclusion}\label{s:conclusion}
 
 \chapter{The Real Stuff}\label{s:real_stuff}
 
