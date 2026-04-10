@@ -1,0 +1,484 @@
+\newif \ifDraft         \Draftfalse    % draft version: shows comments
+\newif \ifHDR		\HDRtrue
+
+%%%% Configuration stuff
+\Drafttrue
+%\HDRfalse
+% Don't use double spacing (that's 20th-century stuff!)
+\newcommand{\Spacing}{singlespacing}
+
+% Note: You'll know from the beginning whether you're writing a HDR or
+% U/G thesis, so it's a good idea to remove that \if and its false branches...
+
+
+\documentclass[\ifHDR hdr\else undergrad\fi, \ifDraft draft\else final\fi, \Spacing]{unswthesis}
+
+\usepackage{verbatim}           % for comment environment (eats up contents)
+\newcommand{\code}[1]{\texttt{#1}}
+\renewcommand{\ttdefault}{lmtt}	% LM rather than courier for \tt
+\usepackage[square,sort&compress,authoryear]{natbib}
+\usepackage{color}
+\usepackage[pdftex]{hyperref}
+\hypersetup{nolinks=false}
+\usepackage{subcaption}
+\usepackage{tabularx}
+\usepackage{colortbl}
+\usepackage{ltablex}
+\usepackage{multirow}
+
+
+\usepackage[final]{listings}    % draft will suppress listings!
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+% seL4 colours:
+\definecolor{accentLight}{HTML}{D5AEAA}
+\definecolor{accent}{HTML}{AC5D55}
+\definecolor{accentDark}{HTML}{820C00}
+\definecolor{emphasisLight}{HTML}{FFE0A2}
+\definecolor{emphasis}{HTML}{FFCA5F}
+\definecolor{emphasisDark}{HTML}{B78B41}
+\definecolor{neutralLighter}{HTML}{D6DBE4}
+\definecolor{neutralLight}{HTML}{8897AE}
+\definecolor{neutral}{HTML}{385378}
+\definecolor{neutralDark}{HTML}{263852}
+\definecolor{greenLight}{HTML}{C0DF9A}
+\definecolor{greenLogo}{HTML}{96CA50}
+\definecolor{greenDark}{HTML}{668B37}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    language=C,
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\small,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    escapeinside={(@}{@)},
+    xleftmargin=17pt,
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+
+% Acronyms
+\usepackage[abbreviations]{glossaries-extra}
+%\setabbreviationstyle[acronym]
+%\setacronymstyle{long-short}
+\makenoidxglossaries
+
+% Get bibliography into the ToC
+\usepackage[nottoc]{tocbibind}
+% Get listings into the ToC
+\renewcommand{\lstlistoflistings}{\begingroup
+    \tocfile{List of Listings}{lol}
+\endgroup}
+
+
+\renewcommand{\cite}[1]{\errmessage{Don't use cite, you probably want citep}}
+
+\usepackage{graphicx}
+\setkeys{Gin}{keepaspectratio=true,clip=true,draft=false}
+\graphicspath{{./imgs/}}
+
+\ifDraft
+  \usepackage{draftwatermark}
+  \SetWatermarkLightness{0.85}
+  \newcommand{\Comment}[1]{\textbf{\textsl{#1}}}
+  \newenvironment{LongComment}[1] % multi-paragraph comment, argument is owner
+    {\begingroup\par\noindent\slshape \textbf{\colorbox{yellow}{Begin Comment[#1]}}\par}
+    {\par\noindent\textbf{\colorbox{yellow}{End Comment}}\endgroup\par}
+  \newcommand{\FIXME}[1]{\textbf{\textsl{\colorbox{yellow}{FIXME:} #1}}}
+  \newcommand{\TODO}[1]{\textbf{\textsl{\colorbox{yellow}{TODO:} #1}}}
+\else
+  \newcommand{\Comment}[1]{\relax}
+  \newenvironment{LongComment}[1]{\expandafter\comment}{\expandafter\endcomment}
+  \newcommand{\FIXME}[1]{\relax}
+  \newcommand{\TODO}[1]{\relax}
+\fi
+
+
+\usepackage{xspace}             % to fix spacing in macros producing words. Eg:
+\newcommand{\theSystem}{NewSys\xspace} % use as normal text
+
+% Example of multi-letter symbols for math mode:
+\newcommand{\myFunc}{\mathrm{myFunc}}
+\newcommand{\myVar}{\mathit{diff}}
+
+\fancypagestyle{noHeading}{
+        \fancyhead{}
+        \renewcommand{\headrulewidth}{0pt}
+}
+\raggedbottom
+
+\thesisfaculty{Faculty of Engineering}
+\thesisschool{\ifHDR\else Trustworthy Systems Group\\\fi
+  School of Computer Science \& Engineering}
+\thesissupervisor{THE SUPERVISOR}
+\ifHDR
+   \thesisdegree{Doctor of Philosophy} % or \thesisdegree{Master of Philosophy}
+\else
+   \thesisdegree{Batchlette of Something}
+\fi
+\thesisdate{2025-02-30}
+
+%\ThesisFamilyName{LASTNAME}
+%\ThesisGivenName{FIRSTNAME}
+%\ThesisOtherNames{MIDDLENAME} %if any, set to {} if not used
+%\ThesisAbbreviatedDegree{PhD}
+
+\thesistitle{THE TITLE OF MY THESIS}
+\thesisZid{z1234567}
+
+\ifHDR
+\else
+  \thesistopic{42}
+\fi
+
+\thesisauthor{FIRST MIDDLE LASTNAME}
+
+\begin{ThesisAbstract}
+  This is the abstract of my thesis.
+\end{ThesisAbstract}
+
+
+\newacronym{api}{API}{application programming interface}
+\newacronym{cpu}{CPU}{central processing unit}
+\newacronym{io}{I/O}{input/output}
+\newacronym{iommu}{IOMMU}{input/output memory management unit}
+\newacronym{mmu}{MMU}{memory management unit}
+\newacronym[shortplural={OSes}]{os}{OS}{operating system}
+\newacronym{sddf}{sDDF}{seL4 Device Driver Framework}
+\newacronym{tcb}{TCB}{trusted computing base}
+
+\begin{document}
+
+%% Capitalisation of cross references
+\newcommand{\lstnumberautorefname}{Line}
+\renewcommand{\chapterautorefname}{Chapter}
+\renewcommand{\sectionautorefname}{Section}
+\renewcommand{\subsectionautorefname}{Section}
+\renewcommand{\subsubsectionautorefname}{Section}
+\renewcommand{\appendixautorefname}{Appendix}
+\renewcommand{\Hfootnoteautorefname}{Footnote}
+%% Commands for index
+\newcommand{\Htextbf}[1]{\textbf{\hyperpage{#1}}}
+
+%% pages in the ``frontmatter'' section have roman numeral page number
+
+%%%
+
+\frontmatter
+\maketitle
+
+\chapter{Abstract}
+
+The abstract.
+
+\chapter{Acknowledgements}
+
+This section should not exceed one page.
+
+\ifHDR
+\textbf{Scholarship and/or Funding - Required}\\
+Candidates in receipt of an Australian Government RTP stipend or RTP fees offset must acknowledge the Australian Government's contribution during and after completion of the HDR program. The acknowledgement must include the mention of support through the Australian Government Research
+Training Program as follows:
+
+This research was supported by the Commonwealth through an Australian Government Research
+Training Program Scholarship [\href{https://doi.org/10.82133/C42F-K220}{DOI: https://doi.org/10.82133/C42F-K220}].
+
+This acknowledgement should be included in any publications arising from the thesis as well as the thesis itself.
+
+If you received other sources of funding, you must acknowledge the Funder's contribution. Suggested
+text is as follows:
+This research has been supported by an [insert scholarship name].
+
+\textbf{Editorial Assistance - Required}\\
+You must acknowledge any editorial assistance received and clearly disclose the type and extent of its
+use. This includes but is not limited to any professional editorial assistance, any editorial changes
+made by a publisher, and any use of AI and Large Language Models. All thesis editing must comply
+with the guidelines provided by the Institute for Professional Editors and by UNSW. You can find out
+details of this on the HDR Hub: \href{https://unsw.sharepoint.com/sites/unswhdr/SitePages/AI-LLMs-and-Responsible-Conduct-of-Research.aspx}{AI, Large Language Models, and the Responsible Conduct of Research
+at UNSW}.
+
+Please refer to the \href{https://www.unsw.edu.au/content/dam/pdfs/research/higher-degree-research/thesis-format-guide.pdf} {Thesis Format Guide} for details.
+
+
+\chapter{List of Publications and Presentations}
+
+\section*{List of Publications}
+ 
+\begin{itemize}
+    \item paper 1
+    \item paper 2
+\end{itemize}
+
+\section*{List of Presentations}
+
+\subsection*{Oral presentations:} 
+
+\begin{itemize}
+\item presentation 1
+\end{itemize}
+
+\subsection*{Poster presentations:}
+
+\begin{itemize}
+    \item presentation 2
+\end{itemize}
+\fi
+
+\setcounter{tocdepth}{3}
+\tableofcontents
+\addcontentsline{toc}{chapter}{\listfigurename}
+\listoffigures
+\addcontentsline{toc}{chapter}{\listtablename}
+\listoftables
+\lstlistoflistings
+\printnoidxglossaries
+
+
+%% pages in the ``mainmatter'' section have arabic page numbers and chapters are numbered
+\mainmatter
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\leftmark}
+\fancyhead[RO]{\rightmark}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{1pt}
+\setcounter{secnumdepth}{3}
+
+\chapter{Introduction}\label{s:intro}
+
+
+The introduction.
+
+\section{A Section With Title Capitalised}\label{s:sect_blah}
+
+\subsection{A subsection using normal sentence case}\label{s:sect_blahblah}
+
+\subsubsection{A subsubsection and so on}
+
+\begin{itemize}
+\item item 1\footnote{A footnote}
+\item item 2
+\item item 3
+\end{itemize}
+
+\chapter{Background}\label{s:background}
+
+Present the background -- focus on setting the scene for your
+research, why you're doing this etc. Do not aim for
+completeness here.
+
+You will obviously cite the ground-breaking work in
+seL4 \citep{Klein_EHACDEEKNSTW_09}, and most likely other
+stuff that followed \citep{Sewell_WGMAK_11,
+  Murray_MBGBSLGK_13, Klein_AEMSKH_14}.
+
+Also relevant may be the binary verification work by
+\citet{Sewell_MK_13}. Also, \citeauthor{Blackham_SCRH_11} did
+some cool stuff back in \citeyear{Blackham_SCRH_11}.
+
+Section references are easy, use the \verb|\autoref| command to
+reference sections and floats.
+You may also want to refer back to \autoref{s:intro}, or
+\autoref{s:sect_blah} or \autoref{s:sect_blahblah}.
+
+Your system will probably have a  \gls{cpu} and an operating
+system (\gls{os}). \glspl{os} need device drivers to do \gls{io}.
+
+
+\chapter{Literature Review}\label{s:lit_review}
+
+Here is the full, detailed lit review.
+
+\chapter{The Real Stuff}\label{s:real_stuff}
+
+\section[Short Title For ToC]{A Section where  occasionally but not necessary there
+  may be long chapter names}\label{s:long_name}
+
+Some Stuff...
+
+\section{How To Use Listings}\label{s:listings}
+
+\begin{lstlisting}[gobble=2,firstline=2,float=th,tabsize=2,
+  label={l:rbuf_struct},
+  caption={Control region queue data structures.}]
+
+  #define QUEUE_SIZE (1<<QUEUE_LOG_SIZE)
+  struct buffer_descr {
+    uint64_t io_or_offset;
+    uint16_t length;
+  }
+  struct queue {
+    uint16_t head;  (@\label{l:head_ptr}@)
+    uint16_t tail;
+    uint32_t consumer_signalled;
+    struct buffer_descr buffers[QUEUE_SIZE];
+  }
+\end{lstlisting}
+
+You may have listings, an example is \autoref{l:rbuf_struct} which
+shows some data structure. In the listing, \autoref{l:head_ptr} shows
+the head pointer.
+
+\section{Other Stuff}\label{s:other_stuff}
+
+\subsection{There may be equations}\label{s:eqs}
+
+Equation \ref{e:equation} is for ...
+
+
+\begin{equation}
+\label{e:equation}
+A = (B_1+ \mu B_2) \sum_{i=0}^{n-1}{r[i]}
+\end{equation}
+
+\subsection{And tables}\label{s:tables}
+
+\autoref{t:table} demonstrates ...
+
+\begin{table}[!ht]
+  \centering
+  \caption{A table}\label{t:table}
+  \begin{tabular}{|l|r|}
+    \hline
+    \textbf{column1} & \textbf{column2} \\  \hline
+    a & 10 \\  \hline
+    b & 14 \\  \hline
+    c & 30 \\  \hline
+    d & 1.7\\ \hline
+    e & 4.6 \\ \hline
+  \end{tabular}
+\end{table}
+
+\subsection{There may be more complex tables}\label{s:ctables}
+
+\newcommand{\LC}[1]{\multirow{2}{0.3\textwidth}{#1}}
+\newcommand{\G}{\cellcolor{greenLogo}}
+\begin{table}[ht]
+  \centering
+  \caption{A complex table}\label{t:ctable}
+  \begin{tabularx}{\textwidth}{l@{}cc@{}X}
+    \hline
+    \bf Goal & \multicolumn{2}{c}{\bf TRL} & \bf Reason \\
+    & \bf pre & \bf post & \\
+    \hline
+    \hline
+    \LC{LionsOS for embedded/cyberphysical systems}
+    & 1 &
+    & Approach based on initial investigations not
+      not yet published in scientific literature \\
+    \cline{2-4}
+             & &4
+                 & \G validated in laboratory, ad-hoc integration \\
+    \hline
+  \end{tabularx}
+\end{table}
+
+\chapter{Figures}
+
+\autoref{f:logo} in shows the logo
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.4\linewidth]{unswlogo}
+\caption{The UNSW logo}
+\label{f:logo}
+\end{figure}
+
+
+An example of a figure with sub-figures is \autoref{f:subfigs}. You
+can refer to the individual ones \autoref{f:sub1}.
+
+
+\begin{figure}[!ht]
+  \centering
+  \subcaptionbox{The logo smaller.\label{f:sub1}}
+  {\includegraphics[width=0.2\linewidth]{unswlogo}}~~~%
+  \subcaptionbox{The logo even smaller.\label{f:sub4}}
+  {\includegraphics[width=0.1\linewidth]{unswlogo}}
+  \caption[Short caption]{A figure with subfigures}
+  \label{f:subfigs}
+\end{figure}
+
+\chapter{Math mode tricks}
+
+Typesetting mathematics is a traditional strength of \TeX. However,
+it is optimised for the more traditional kind of maths, where,
+besides a small number of predefined functions, people use
+single-letter variable and function names. In such a context it is
+customary to interpret a string like ``\(abc\)'' as the product of
+three variables ``\(a\)'', ``\(b\)'' and ``\(c\)''.
+
+In our discipline we use a lot of multi-letter function and variable
+names, as we are used to from programming. Because \TeX{} in math mode
+will consider ``diff'' a product of four variables, it will space it
+as such, with pretty ugly result, i.e.\ ``\(diff\)''. To avoid this,
+use the following rules:
+\begin{itemize}
+\item Use pre-defined function names where they exist (examples are
+  \(\sin\), \(\exp\) and \(\log\)).
+\item For non-standard function names, use \verb|\mathrm|, such as
+  \verb|{\mathrm{myFunc}}(x)|, which renders as ``${\mathrm{myFunc}}(x)$''.
+\item For multi-letter variable names, use \verb|\mathit|, such as
+  \verb|\sin(\mathit{diff})|, which renders as ``$\sin(\mathit{diff})$''.
+\end{itemize}
+
+Rather than using the above, somewhat cumbersome, constructs, define
+commands as follows:\\
+\verb|\newcommand{\myFunc}{\mathrm{myFunc}}|\\
+\verb|\newcommand{\myVar}{\mathit{diff}}|
+
+This then lets you write it
+naturally as \verb|\myFunc(\myVar)|, producing ``$\myFunc(\myVar)$''.
+
+
+\chapter{Conclusions and Future Directions}\label{c:conclusion}
+
+Blah
+
+\clearpage
+
+\backmatter
+
+\pagestyle{noHeading}
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\clearpage
+
+% appendices
+\appendix
+
+\chapter[Appendix: a]{Supplementary Materials}\label{a:supps}
+
+A hello world C program:
+
+\begin{lstlisting}[language=c]
+#include <stdio.h>
+int main(){
+    fprintf(stderr,"Hello world\n");
+    return 0;
+}
+\end{lstlisting}
+
+Compile and run as follows:
+
+\begin{lstlisting}[language=bash]
+gcc -Wall a.c -o prog
+./prog
+\end{lstlisting}
+
+\end{document}

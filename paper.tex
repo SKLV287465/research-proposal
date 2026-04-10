@@ -1,0 +1,432 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% This is for for journal and conference papers
+%  - use ``report.tex'' for technical reports, manuals etc
+%  - use ``simple'' for shorter/simpler UNSW-branded documents
+%
+% Please check (and update!) the README file for usage information
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For most ACM conferences, Sigplan at 10pt is what you  want.
+% Final submissions to SOSP etc use SigAlternate.
+% Alternatives are Usenix, IEEE (conferences and journals) and SpringerLNCS.
+% Note that Standard is obsolete, use the "simple.tex" template instead!
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newif \ifUsenix	\Usenixfalse
+\newif \ifACM		\ACMfalse
+\newif \ifIEEE		\IEEEfalse
+\newif \ifLNCS  \LNCSfalse
+\newif \ifAuthorversion	\Authorversionfalse % for ACM only
+
+% Enables fixmes
+\newif \ifDraft         \Draftfalse    % draft version: shows comments
+\newif\ifFinal \Finalfalse             % final "camera-ready" version of accepted paper
+\newif \ifPreprint \Preprintfalse   % for circulation while under submission
+\newif \ifReview \Reviewfalse      % for submission for review
+
+% Enable exactly one of the below:
+\ACMtrue
+%\Usenixtrue
+%\IEEEtrue
+%\LNCStrue
+
+% Status of the paper:
+%\Drafttrue
+\Reviewtrue
+%\Finaltrue
+%\Authorversiontrue
+
+% Be nice to the reader and avoid numeric cites. The default setup
+% produces (long) reader-friendly author-year cites. Enable \ifAlpha
+% below to produce short alpha-numeric cite strings.
+
+% Try to avoid numeric cites if at all possible. (Hint: If you
+% *really* must, this is enabled by replacing the "authoryear" option
+% by "numbers" in the natbib package or the sigplan class.
+\newif\ifAlpha \Alphafalse
+%\Alphatrue
+
+\ifFinal\Draftfalse\fi
+
+% Once you've decided on the document style (which is most likely
+% prescribed by the conference you want to send your paper to) it's
+% probably a good idea to clean out this file of all the
+% \ifUsenix, \ifACM clauses...
+
+%%% Hyperlinks embed links for references in the PDF output (both for
+%%% internal as well as external links).
+\newif \ifhyperlinks    \hyperlinkstrue
+%%% You should always use this, except where camera-ready instructions
+%%% prohibit hyperlinks.
+%%% To make hyperlinks work correctly, you should use \autoref{label} instead of
+%%% Section~\ref{label}. This will make ``Section'' part of the link, not
+%%% just the number.
+
+
+
+% IEEE conference/transactions header
+\ifIEEE
+  \documentclass[10pt,conference,compsoc\ifDraft,draft\fi]{IEEEtran}
+  % note: the "draft" option silently breaks the "listings" package -
+  % drop the option if you use that package!
+  \usepackage[pdftex]{graphicx}
+\fi
+
+% Usenix header
+\ifUsenix
+  \documentclass[letterpaper,10pt,twocolumn\ifDraft,draft\fi]{article}
+  % note: the "draft" option silently breaks the "listings" package -
+  % drop the option if you use that package!
+  \usepackage[pdftex]{graphicx}
+  \usepackage{usenix}
+  %\def\docstatus{To be published in Proceedings of the 2010 USENIX Annual Technical Conference}
+  \def\docstatus{Submitted to the 2010 USENIX Annual Technical Conference}
+  \newif \ifWebversion    \Webversiontrue
+\fi
+
+% ACM header
+\ifACM
+  % acmart.cls is presently highly undocumented, this is what we found:
+  % - hyphens:	always use this, to hyphenate long URLs
+  % - nonacm:	gets rid of the space-consuming copyright box (for reviewing)
+  \documentclass[\ifAuthorversion authorversion,\fi hyphens,sigconf,10pt\ifReview,nonacm,review\ifPreprint\else,anonymous\fi\ifDraft,authordraft,timestamp,draft\fi\fi]{acmart}
+  % note: the "draft" option silently breaks the "listings" package -
+  % drop the option if you use that package!
+  \ifAlpha
+    \setcitestyle{acmnumeric,super,sort&compress}
+    \let \citep = \cite
+    \let \citet = \cite
+  \else
+    \citestyle{acmauthoryear}
+  \fi
+\fi                             % ACM
+
+% Springer LNCS header
+\ifLNCS
+  \documentclass[\ifDraft draft\fi]{llncs}
+  % note: the "draft" option silently breaks the "listings" package -
+  % drop the option if you use that package!
+  \Alphafalse
+\fi
+
+
+\ifACM\else
+  \usepackage{times,color}
+  \usepackage{amsmath}
+  \usepackage{paralist}           % for compact lists, ACM are already compact
+  \usepackage{balance}            % to balance columns on the last
+     % activate with \balance command in the text of the first column of the last page
+
+  \ifAlpha
+    \let \citep = \cite
+    \let \citet = \cite
+  \else
+     \usepackage[square,sort&compress,\ifIEEE numbers\else \ifLNCS numbers \else authoryear\fi\fi]{natbib}
+   \fi
+   \newenvironment{acks}{\section*{Acknowledgements}}{}
+\fi                             % not ACM
+
+
+\renewcommand{\cite}[1]{\errmessage{Don't use cite, you probably want citep}}
+\ifLNCS
+  \renewcommand{\citet}[1]{\errmessage{citet is not compatible with LNCS style bibliography}}
+\fi
+
+\usepackage{verbatim}           % for comment environment (eats up contents)
+\newcommand{\code}[1]{\texttt{#1}}
+\renewcommand{\ttdefault}{lmtt}	% LM rather than courier for \tt
+
+\usepackage{xspace}             % to fix spacing in macros producing words. Eg:
+\newcommand{\theSystem}{NewSys\xspace} % use as normal text
+
+% Example of multi-letter symbols for math mode:
+\newcommand{\myFunc}{\mathrm{myFunc}}
+\newcommand{\myVar}{\mathit{diff}}
+
+% Leave this in here, it is often useful to deal with latexdiff breakage.
+% Put it around breakage-causing segments (in both versions to be diffed!)
+\newenvironment{DIFnomarkup}{}{}
+
+\ifACM\else
+  \renewcommand{\ttdefault}{lmtt}	% LM rather than courier for \tt
+  \usepackage[pdftex]{graphicx}
+\fi
+\setkeys{Gin}{keepaspectratio=true,clip=true,draft=false}
+\graphicspath{{./imgs/}}
+
+\ifDraft
+  \usepackage{draftwatermark}
+  \SetWatermarkLightness{0.85}
+  \newcommand{\Comment}[1]{\textbf{\textsl{#1}}}
+  \newenvironment{LongComment}[1] % multi-paragraph comment, argument is owner
+    {\begingroup\par\noindent\slshape \textbf{\colorbox{yellow}{Begin Comment[#1]}}\par}
+    {\par\noindent\textbf{\colorbox{yellow}{End Comment}}\endgroup\par}
+  \newcommand{\FIXME}[1]{\textbf{\textsl{\colorbox{yellow}{FIXME:} #1}}}
+  \newcommand{\TODO}[1]{\textbf{\textsl{\colorbox{yellow}{TODO:} #1}}}
+\else
+  \newcommand{\Comment}[1]{\relax}
+  \newenvironment{LongComment}[1]{\expandafter\comment}{\expandafter\endcomment}
+  \newcommand{\FIXME}[1]{\relax}
+  \newcommand{\TODO}[1]{\relax}
+\fi
+
+% This sort of command for each active author can be convenient
+\newcommand{\gernot}[1]{\Comment{#1 \colorbox{yellow}{[gernot]}}}
+
+\ifACM\else
+  \usepackage[pdftex]{hyperref}
+\fi
+\hypersetup{nolinks=\ifhyperlinks false\else true\fi}
+
+
+\begin{document}
+
+  %% Capitalisation of cross references
+  \renewcommand{\sectionautorefname}{Section}
+  \renewcommand{\subsectionautorefname}{Section}
+  \renewcommand{\subsubsectionautorefname}{Section}
+  \renewcommand{\appendixautorefname}{Appendix}
+  \renewcommand{\Hfootnoteautorefname}{Footnote}
+  %% Commands for index
+  \newcommand{\Htextbf}[1]{\textbf{\hyperpage{#1}}}
+
+\ifACM\ifReview\else
+  \copyrightyear{2018}
+  \setcopyright{acmlicensed}
+  \acmConference[EuroSys '18]{Thirteenth EuroSys Conference 2018}{April 23--26, 2018}{Porto, Portugal}
+  \acmDOI{...}
+  \ifAuthorversion
+    %% Hack to get same column break on author and ACM versions (adjust vspace as needed)
+    \makeatletter
+    \def\@formatdoi#1{\url{https://doi.org/#1}\vspace*{2ex}}
+    \makeatother
+  \fi
+\fi\fi
+
+%%%%%%%%%%%
+\ifDraft
+Draft submission to \FIXME{blah}. The CfP is here:
+\url{???}.
+
+CONF paper number: ??, HotCRP URL \url{???}
+
+Currently registered authors: none
+
+Limit is \FIXME{???} pages plus references.
+
+Ensure that there are no lines overflowing, especially in the listing
+(indicated in draft mode by a black box at the margin).
+
+Turn off Draft mode before submitting by setting  \verb,\Draftfalse, in the header.
+
+Note, the Makefile producing the PDF suppresses all ``editor'',
+``publisher'', ``issn'' and ``isbn'' strings from the .bib files, as
+these just waste space and are generally not needed. In the rare
+case where you want them (eg a journal paper) remove the respective
+sed script from the Makefile.
+
+Suppression of DOI strings is simpler to control: Simply add
+\verb|\newcommand{\doi}[1]{\relax}| in the \LaTeX{} source and
+they'll be suppressed. (In some document styles \verb|\doi| is
+already defined, so you'll need to do \verb|\renewcommand|
+instead. \verb|\providescommand| is unlikely to bring you joy.)
+
+\clearpage
+\addtocounter{page}{-1}
+\makeatletter
+% \setcounter{ACM@linecount}{1}
+\ACM@linecount\@ne\relax
+\makeatother
+\fi
+%%%%%%%%%%%
+
+\title{This is the title of my paper}
+\ifACM
+  \titlenote{This is a titlenote}
+  \subtitle{Subtitle Text, if any}
+  \subtitlenote{Subtitle note}
+  \author{Name1}
+  \affiliation{\institution{ACME Inc}\city{Sydney}}
+  \affiliation{\institution{UNSW Sydney}}
+  \author{Name2, Name2}
+  \orcid{0000-0002-7069-0831} % this is Gernot's ORCID
+  \affiliation{\institution{UNSW Sydney}}
+  \email{gernot@unsw.edu.au}
+\else\ifLNCS
+\author{Author One, Author Two, Author Three}
+  \institute{
+    UNSW\\
+    Sydney, Australia\\
+    \href{mailto:first1.last1@unsw.edu.au}{\{email1,email2,email3\}@unsw.edu.au}
+  }
+\else\iftrue
+  \author{Author One, Author Two, Author Three\\
+    UNSW\\
+    Sydney, Australia\\
+    \href{mailto:first1.last1@unsw.edu.au}{\{email1,email2,email3\}@unsw.edu.au}
+  }
+\else
+  % Alternate version:
+  \author{
+    Leonid Ryzhyk\footnotemark[3]~\footnotemark[4] \quad
+    Ihor Kuz\footnotemark[3]~\footnotemark[4] \quad
+    Gernot Heiser\footnotemark[3]~\footnotemark[4]\\
+    \footnotemark[3]~\affaddr{ACME~ ~ ~
+      \footnotemark[4]~UNSW}\\
+    \affaddr{Sydney, Australia}\\
+    \email{Leonid.Ryzhyk@unsw.edu.au}
+  }
+\fi\fi\fi
+
+\ifUsenix
+  \maketitle
+  \subsection*{Abstract}
+  This is the abstract
+\else\ifACM
+  \begin{abstract}
+    Write your abstract here
+  \end{abstract}
+  \maketitle
+\else                           % not ACM
+  \urlstyle{sf}
+  \maketitle
+  \thispagestyle{empty}
+  \begin{abstract}
+    Write your abstract here
+  \end{abstract}
+\fi\fi                          % USENIX & ACM
+\ifFinal
+  \pagestyle{empty}
+\fi
+
+
+\section{Introduction}\label{s:intro}
+
+  Write the introduction here. A few years ago,
+  \citet{Klein_EHACDEEKNSTW_09} showed that it is possible to verify a
+  kernel. Note how the \verb|\citet| command lets you use the author
+  name as part of the text.
+
+  Otherwise, use the the \verb|\citep|, such as when you talk about
+  the other cool stuff~\citep{Blackham_SH_11, Sewell_MK_13,
+    Murray_MBGBSLGK_13} the team did later.  You can also have
+  references with very long URLs~\citep{L4-emb:N1}.
+  And you can cite web sites~\citep{seL4:URL, Dacey_03}.
+
+  Section references are easy, use the \verb|\autoref| command to
+  reference sections and floats. See more in \autoref{s:main}.
+
+\section{Everything else}\label{s:main}
+
+  The next paragraph gives an example of marco use. If the macro has
+  been defined with the \verb|\xspace| command (as done in the
+  preamble of this document with \verb|\theSystem|) the spacing will come out right.
+
+  We verified \theSystem in 2009~\citep{Klein_EHACDEEKNSTW_09}. To date
+  there is still no verified system other than \theSystem.
+
+\section{Some Stuff}\label{s:other}
+
+  Write the rest of your paper here. A test \autoref{f:test}.
+  And a section reference to \autoref{s:intro} for testing.
+
+  \begin{figure}[htb]
+    \begin{center}
+      \makebox[0mm][l]{\color{black}\rule[-2mm]{41mm}{26mm}}%
+      \hspace{2mm}\includegraphics[width=37mm]{UNSW-header.png}
+    \end{center}
+    \caption{\label{f:test}The test figure}
+  \end{figure}
+
+\ifACM\else
+  For lists you may want to use the \texttt{compactitem} environment:
+  \begin{compactitem}
+  \item it uses far less vertical space than the \texttt{itemize} environment
+  \item it is completely compatible with \texttt{itemize}
+  \item there are also the equivalent \texttt{compactdesc} and
+    \texttt{compactenum} environments.
+  \end{compactitem}
+\fi
+
+\begin{LongComment}{Gernot}
+  This is a comment that contains a list:
+  \begin{itemize}
+  \item First item
+  \item Second item
+  \end{itemize}
+
+  ... and multiple paragraphs.
+\end{LongComment}
+
+\section{Math mode tricks}
+
+  Typesetting mathematics is a traditional strength of \TeX. However,
+  it is optimised for the more traditional kind of maths, where,
+  besides a small number of predefined functions, people use
+  single-letter variable and function names. In such a context it is
+  customary to interpret a string like ``\(abc\)'' as the product of
+  three variables ``\(a\)'', ``\(b\)'' and ``\(c\)''.
+
+  In our discipline we use a lot of multi-letter function and variable
+  names, as we are used to from programming. Because \TeX{} in math mode
+  will consider ``diff'' a product of four variables, it will space it
+  as such, with pretty ugly result, i.e.\ ``\(diff\)''. To avoid this,
+  use the following rules:
+  \begin{itemize}
+  \item Use pre-defined function names where they exist (examples are
+    \(\sin\), \(\exp\) and \(\log\)).
+  \item For non-standard function names, use \verb|\mathrm|, such as
+    \verb|{\mathrm{myFunc}}(x)|, which renders as ``${\mathrm{myFunc}}(x)$''.
+  \item For multi-letter variable names, use \verb|\mathit|, such as
+    \verb|\sin(\mathit{diff})|, which renders as ``$\sin(\mathit{diff})$''.
+  \end{itemize}
+
+  Rather than using the above, somewhat cumbersome, constructs, define
+  commands as follows:\\
+  \verb|\newcommand{\myFunc}{\mathrm{myFunc}}|\\
+  \verb|\newcommand{\myVar}{\mathit{diff}}|
+
+  This then lets you write it
+  naturally as \verb|\myFunc(\myVar)|, producing ``$\myFunc(\myVar)$''.
+
+
+\section{Conclusions}\label{s:concl}
+
+  Write some conclusions.
+
+  Note, the Makefile producing the PDF suppresses all ``editor'',
+  ``publisher'', ``issn'' and ``isbn'' strings from the .bib files, as
+  these just waste space and are generally not needed. In the rare
+  case where you want them (eg a journal paper) remove the respective
+  sed script from the Makefile.
+
+  Suppression of DOI strings is simpler to control: Simply add
+  \verb|\newcommand{\doi}[1]{\relax}| in the \LaTeX{} source and
+  they'll be suppressed. (In some document styles \verb|\doi| is
+  already defined, so you'll need to do \verb|\renewcommand|
+  instead. \verb|\providescommand| is unlikely to bring you joy.)
+
+\begin{acks}
+  We thank the tooth fairy for providing results and Dropbears United
+  for funding.
+\end{acks}
+
+\balance
+{\sloppy
+  \ifUsenix\footnotesize\fi
+  \ifACM
+    \bibliographystyle{ACM-Reference-Format}
+  \else
+    \ifLNCS
+      \bibliographystyle{splncs04}
+    \else
+      \ifAlpha
+        \bibliographystyle{alpha}
+      \else
+        \bibliographystyle{plainnat}
+      \fi
+    \fi % end of \ifLNCS
+  \fi   % end of \ifACM
+
+  \bibliography{references}
+}
+\end{document}
