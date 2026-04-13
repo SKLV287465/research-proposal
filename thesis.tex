@@ -141,15 +141,8 @@
 
 \thesisauthor{Joshua Jooeon Shim}
 
+\newacronym{mkbs}{MKBS}{microkernel-based system}
 
-\newacronym{api}{API}{application programming interface}
-\newacronym{cpu}{CPU}{central processing unit}
-\newacronym{io}{I/O}{input/output}
-\newacronym{iommu}{IOMMU}{input/output memory management unit}
-\newacronym{mmu}{MMU}{memory management unit}
-\newacronym[shortplural={OSes}]{os}{OS}{operating system}
-\newacronym{sddf}{sDDF}{seL4 Device Driver Framework}
-\newacronym{tcb}{TCB}{trusted computing base}
 
 \begin{document}
 
@@ -222,201 +215,25 @@ Please refer to the \href{https://www.unsw.edu.au/content/dam/pdfs/research/high
 \setcounter{secnumdepth}{3}
 
 \chapter{Introduction}\label{s:intro}
-
-
-The introduction.
-
-\section{A Section With Title Capitalised}\label{s:sect_blah}
-
-\subsection{A subsection using normal sentence case}\label{s:sect_blahblah}
-
-\subsubsection{A subsubsection and so on}
-
-\begin{itemize}
-\item item 1\footnote{A footnote}
-\item item 2
-\item item 3
-\end{itemize}
+\subfile{sections/introduction.tex}
 
 \chapter{Background}\label{s:background}
-
+\subfile{sections/background.tex}
 Present the background -- focus on setting the scene for your
 research, why you're doing this etc. Do not aim for
 completeness here.
-
-You will obviously cite the ground-breaking work in
-seL4 \citep{Klein_EHACDEEKNSTW_09}, and most likely other
-stuff that followed \citep{Sewell_WGMAK_11,
-  Murray_MBGBSLGK_13, Klein_AEMSKH_14}.
-
-Also relevant may be the binary verification work by
-\citet{Sewell_MK_13}. Also, \citeauthor{Blackham_SCRH_11} did
-some cool stuff back in \citeyear{Blackham_SCRH_11}.
-
-Section references are easy, use the \verb|\autoref| command to
-reference sections and floats.
-You may also want to refer back to \autoref{s:intro}, or
-\autoref{s:sect_blah} or \autoref{s:sect_blahblah}.
-
-Your system will probably have a  \gls{cpu} and an operating
-system (\gls{os}). \glspl{os} need device drivers to do \gls{io}.
-
 
 \chapter{Literature Review}\label{s:lit_review}
 
 \subfile{sections/literature_review.tex}
 
 \chapter{Methodology}\label{s:methodology}
-
+\subfile{sections/methodology.tex}
 \chapter{Research Plan}\label{s:research_plan}
+\subfile{sections/research_plan.tex}
 
 \chapter{Conclusion}\label{s:conclusion}
-
-\chapter{The Real Stuff}\label{s:real_stuff}
-
-\section[Short Title For ToC]{A Section where  occasionally but not necessary there
-  may be long chapter names}\label{s:long_name}
-
-Some Stuff...
-
-\section{How To Use Listings}\label{s:listings}
-
-\begin{lstlisting}[gobble=2,firstline=2,float=th,tabsize=2,
-  label={l:rbuf_struct},
-  caption={Control region queue data structures.}]
-
-  #define QUEUE_SIZE (1<<QUEUE_LOG_SIZE)
-  struct buffer_descr {
-    uint64_t io_or_offset;
-    uint16_t length;
-  }
-  struct queue {
-    uint16_t head;  (@\label{l:head_ptr}@)
-    uint16_t tail;
-    uint32_t consumer_signalled;
-    struct buffer_descr buffers[QUEUE_SIZE];
-  }
-\end{lstlisting}
-
-You may have listings, an example is \autoref{l:rbuf_struct} which
-shows some data structure. In the listing, \autoref{l:head_ptr} shows
-the head pointer.
-
-\section{Other Stuff}\label{s:other_stuff}
-
-\subsection{There may be equations}\label{s:eqs}
-
-Equation \ref{e:equation} is for ...
-
-
-\begin{equation}
-\label{e:equation}
-A = (B_1+ \mu B_2) \sum_{i=0}^{n-1}{r[i]}
-\end{equation}
-
-\subsection{And tables}\label{s:tables}
-
-\autoref{t:table} demonstrates ...
-
-\begin{table}[!ht]
-  \centering
-  \caption{A table}\label{t:table}
-  \begin{tabular}{|l|r|}
-    \hline
-    \textbf{column1} & \textbf{column2} \\  \hline
-    a & 10 \\  \hline
-    b & 14 \\  \hline
-    c & 30 \\  \hline
-    d & 1.7\\ \hline
-    e & 4.6 \\ \hline
-  \end{tabular}
-\end{table}
-
-\subsection{There may be more complex tables}\label{s:ctables}
-
-\newcommand{\LC}[1]{\multirow{2}{0.3\textwidth}{#1}}
-\newcommand{\G}{\cellcolor{greenLogo}}
-\begin{table}[ht]
-  \centering
-  \caption{A complex table}\label{t:ctable}
-  \begin{tabularx}{\textwidth}{l@{}cc@{}X}
-    \hline
-    \bf Goal & \multicolumn{2}{c}{\bf TRL} & \bf Reason \\
-    & \bf pre & \bf post & \\
-    \hline
-    \hline
-    \LC{LionsOS for embedded/cyberphysical systems}
-    & 1 &
-    & Approach based on initial investigations not
-      not yet published in scientific literature \\
-    \cline{2-4}
-             & &4
-                 & \G validated in laboratory, ad-hoc integration \\
-    \hline
-  \end{tabularx}
-\end{table}
-
-\chapter{Figures}
-
-\autoref{f:logo} in shows the logo
-
-\begin{figure}[!ht]
-\centering
-\includegraphics[width=0.4\linewidth]{unswlogo}
-\caption{The UNSW logo}
-\label{f:logo}
-\end{figure}
-
-
-An example of a figure with sub-figures is \autoref{f:subfigs}. You
-can refer to the individual ones \autoref{f:sub1}.
-
-
-\begin{figure}[!ht]
-  \centering
-  \subcaptionbox{The logo smaller.\label{f:sub1}}
-  {\includegraphics[width=0.2\linewidth]{unswlogo}}~~~%
-  \subcaptionbox{The logo even smaller.\label{f:sub4}}
-  {\includegraphics[width=0.1\linewidth]{unswlogo}}
-  \caption[Short caption]{A figure with subfigures}
-  \label{f:subfigs}
-\end{figure}
-
-\chapter{Math mode tricks}
-
-Typesetting mathematics is a traditional strength of \TeX. However,
-it is optimised for the more traditional kind of maths, where,
-besides a small number of predefined functions, people use
-single-letter variable and function names. In such a context it is
-customary to interpret a string like ``\(abc\)'' as the product of
-three variables ``\(a\)'', ``\(b\)'' and ``\(c\)''.
-
-In our discipline we use a lot of multi-letter function and variable
-names, as we are used to from programming. Because \TeX{} in math mode
-will consider ``diff'' a product of four variables, it will space it
-as such, with pretty ugly result, i.e.\ ``\(diff\)''. To avoid this,
-use the following rules:
-\begin{itemize}
-\item Use pre-defined function names where they exist (examples are
-  \(\sin\), \(\exp\) and \(\log\)).
-\item For non-standard function names, use \verb|\mathrm|, such as
-  \verb|{\mathrm{myFunc}}(x)|, which renders as ``${\mathrm{myFunc}}(x)$''.
-\item For multi-letter variable names, use \verb|\mathit|, such as
-  \verb|\sin(\mathit{diff})|, which renders as ``$\sin(\mathit{diff})$''.
-\end{itemize}
-
-Rather than using the above, somewhat cumbersome, constructs, define
-commands as follows:\\
-\verb|\newcommand{\myFunc}{\mathrm{myFunc}}|\\
-\verb|\newcommand{\myVar}{\mathit{diff}}|
-
-This then lets you write it
-naturally as \verb|\myFunc(\myVar)|, producing ``$\myFunc(\myVar)$''.
-
-
-\chapter{Conclusions and Future Directions}\label{c:conclusion}
-
-Blah
+\subfile{sections/conclusion.tex}
 
 \clearpage
 
@@ -431,23 +248,6 @@ Blah
 % appendices
 \appendix
 
-\chapter[Appendix: a]{Supplementary Materials}\label{a:supps}
 
-A hello world C program:
-
-\begin{lstlisting}[language=c]
-#include <stdio.h>
-int main(){
-    fprintf(stderr,"Hello world\n");
-    return 0;
-}
-\end{lstlisting}
-
-Compile and run as follows:
-
-\begin{lstlisting}[language=bash]
-gcc -Wall a.c -o prog
-./prog
-\end{lstlisting}
 
 \end{document}

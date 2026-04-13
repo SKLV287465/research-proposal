@@ -3,3 +3,30 @@
 % pages]
 
 \documentclass[../thesis.tex]{subfiles}
+\begin{document}
+The broad justification for this thesis is to ultimately explore the feasibility of a microkernel-based general purpose operating system regarding performance. Despite the benefits in security and reliability to be gained through the microkernel design, it has historically been the case that without sufficient performance, wide adoption of microkernels will not happen. Hence, we must answer the question of \textit{Can we make microkernel based systems as fast as current monolithic or hybrid systems without compromising on portability?} 
+The aim of this thesis is to answer the question of:\\
+- Are microkernels feasible in performance critical workloads
+- Should we move towards microkernels
+
+\section{}
+
+\section{LionsOS Userland Pager}
+LionsOS is currently a static operating system. Essentially, all programs and even memory regions are loaded into memory before the system starts and these programs and importantly memory regions are fixed throughout the lifespan of the system. Whilst this is sufficient for embedded systems with fixed, predictable workloads, it is prohibitive for dynamic workloads, especially for those with changing memory requirements. 
+
+% Claim: the high IPC cost and double bookeeping or whatever that HM paper claims means that it is necessary to have an in kernel pager .
+
+% in order to prove this, I have implemented a PoC userland pager on top of lionsos
+
+% challenges: lionsos is a static operating system without a memory manager.
+
+% design
+
+% results
+
+\TODO{Get more project ideas.}
+
+One of the criticisms against microkernel design is the difficulty in implementing certain POSIX system calls such as \textit{Fork} and \textit{Poll} due to a lack of a centralised repository for global states, contributing to microkernels' reduced compatibility \citep{Chen_JWLLLWHLYWYPX_24}. If time permits, I will attempt to implement \texttt{fork} in an efficient manner to show that it is possible and efficient to have a fast, fully POSIX compliant interface on a microkernel based system without compromising on the principle of minimality and therefore without changing the kernel. \TODO{flesh this out more}
+
+
+\end{document}
