@@ -4,16 +4,67 @@
 
 \documentclass[../thesis.tex]{subfiles}
 \begin{document}
-The broad justification for this thesis is to ultimately explore the feasibility of a microkernel-based general purpose operating system regarding performance. Despite the benefits in security and reliability to be gained through the microkernel design, it has historically been the case that without sufficient performance, wide adoption of microkernels will not happen. Hence, we must answer the question of \textit{Can we make microkernel based systems as fast as current monolithic or hybrid systems without compromising on portability?} 
-The aim of this thesis is to answer the question of:\\
-- Are microkernels feasible in performance critical workloads
-- Should we move towards microkernels
+The broad justification for this thesis is to ultimately explore the feasibility of a microkernel-based general purpose operating system regarding performance. Despite the benefits in security and reliability to be gained through the microkernel design, it has historically been the case that without sufficient performance, wide adoption of microkernels will not happen. Hence, we must answer the question:\\ \textit{Can we make microkernel based systems as fast as current monolithic or hybrid systems without compromising on portability?} 
 
-\section{}
 
 \section{LionsOS Userland Pager}
-LionsOS is currently a static operating system. Essentially, all programs and even memory regions are loaded into memory before the system starts and these programs and importantly memory regions are fixed throughout the lifespan of the system. Whilst this is sufficient for embedded systems with fixed, predictable workloads, it is prohibitive for dynamic workloads, especially for those with changing memory requirements. 
+LionsOS is currently a static operating system. Essentially, all programs and even memory regions are loaded into memory before the system starts and these programs and importantly memory regions are fixed throughout the lifespan of the system. Whilst this is sufficient for embedded systems with fixed, predictable workloads, it is prohibitive for dynamic workloads, especially for those with changing memory requirements. One of the requirements for a dynamic operating system is a way to bypass this limitation and this can be done through a pager. Therefore I have implemented a \gls{poc} userland pager for LionsOS to test performance and feasibility.
 
+\subsection{Assumptions and Limitations}
+\begin{itemize}
+    \item There is a static upper limit of the number of \gls{pd}'s that are supported by the pager, defined as \texttt{MAX\_PDS}.
+    \item \gls{pd}'s that are to be supported by the pager must be specified as `children' of the pager in the \gls{sdf}.
+    \item The `children' of the pager must have an ID less than \texttt{MAX\_PDS}.
+    \item The memory manager only allocates 4k size blocks.
+    \item The Pager must be named `pager' in the \gls{sdf}.
+    \item The number of available frames is fixed upon loading the system.
+    \item The `heap' allocated to by the memory manager always starts at 0x8000000000.
+    \item The `heap' must be specified in the \gls{sdf} as an unbacked memory region. 
+    \item \gls{pd}'s are singlethreaded.
+    \item `Child' \gls{pd}'s of the pager do not have other faults except page faults. 
+\end{itemize}
+
+\subsection{SDFgen}
+In LionsOS which uses Microkit, in order to create a system, we must first create a \gls{sdf}. This can either be done manually by writing the \gls{xml} or by creating a python script using the \href{https://pypi.org/project/sdfgen/}{sdfgen} library. Microkit originally does not have a `backed' attribute so I have modified the library and its \gls{ffi} in order to provide the constructor parameter for this option for Memory Regions and for the \href{https://pypi.org/project/sdfgen/}{sdfgen} library to also include this attribute when generating the \gls{xml} file.
+
+\subsection{Microkit}
+Microkit is responsible for loading the system. Hence, it is what reads the \gls{sdf} and loads the contents to run the system. In order to support the function of the userland pager, I have made the following modifications to this loading process: \begin{enumerate}
+    \item Microkit now recognises the `unbacked' attribute from the \gls{sdf} and this is reflected in the Microkit code.
+    \item Unbacked Memory Regions are now not backed by frames during loading. However, the paging structures for mappings into this memory regions are created due to the fact that retyping of untyped memory is not supported at user level.
+    \item As \gls{cap}'s in general are not present in userland normally for Microkit and LionsOS, I collect all unbacked memory regions' frame \gls{cap}'s into an array and map this array into the pager's elf as a symbol.
+    \item Since the pager will need to be able to write and read from the frames that are to be mapped, all frames from unbacked memory regions are mapped with read and write permissions at load time into the pager's \gls{vspace}.
+\end{enumerate}
+
+\subsection{Memory Manager}
+The memory manager which I have written for this implementation is a very primitive memory manager that supports memory allocations and frees. However, the memory manager has a predefined amount of block that it can allocate and only allocates and frees in 4k blocks. The \gls{vaddr} of the allocation begins at 0x8000000000 and assumes that there are no preexisting mappings past this address. The Memory manager does allocations and frees in $O(1)$ time complexity and is implemented through an array with a free and used linked lists.\\
+The memory manager must be linked with other user \gls{pd}'s through channels in the \gls{sdf} and memory allocations and frees are done through \gls{ppc}'s.
+
+\subsection{Pager}
+From compilation, the pager is given the number of frames for mapping and an array of frame \gls{cap}'s. The pager which I have implemented uses a two list \gls{lru} page replacement algorithm, as an attempted analogue for the Linux page replacement algorithm in order to run benchmarks page fault latency benchmarks against Linux. The two list \gls{lru} is implemented with two doubly linked lists and a list of free frames. There are naturally implementation differences between the Linux two list \gls{lru} algorithm and this algorithm. The heuristics in the decision in moving pages to and from the active/inactive lists are much more complex than in my implementation and my implementation has a known number of frames to be mapped per \gls{pd}. Because of this, I found it more convenient to write the page replacement algorithm around `frames' instead of pages. Furthermore, as the reference bit and dirty bit is not possible to access in userland in a microkit system, we use a software maintained referenced and dirty bit.
+\subsubsection{Init}
+Upon initialisation, the pager loops through the array of frame \gls{cap}'s and places each frame in the list of free frames. This is as all frames start off as unmapped.
+\subsubsection{Paging}
+The entry point to the pager is \texttt{fault()}. This is as the pager is the `parent' of the supported \gls{pd}'s and Microkit sends faults to the parent and if one does not exist then to the Microkit Monitor. The reasons why a fault occurs is as follows: \begin{enumerate}
+    \item Write fault as page is mapped as \gls{ro}. This occurs in order to keep track of whether a page is `dirty' or not with software.
+    \item Read/Write fault as page has been unmapped but is still associated with the frame. This occurs in order to keep track of the `reference' bit with software.
+    \item Read/Write fault as there is no frame backing the page.
+\end{enumerate}
+The first two cases are trivial as we can map the page with the necessary permissions and mark the dirty/reference boolean.\\
+The third case is as follows: \begin{enumerate}
+    \item Check that this fault is not already being processed. Since we assume that \gls{pd}'s are singlethreaded, if the same fault occurs, the \gls{vaddr} should be the same so we store a per \gls{pd} \gls{vaddr} to check whether the incoming page fault is already being serviced and if so we return early.
+    \item We source a frame using the two list \gls{lru} algorithm. This is done as follows: \begin{enumerate}
+        \item \TODO{explain tlthingy}
+    \end{enumerate}
+    \item if the sourced frame is allocated to a page and if that page is marked as dirty, then we page it out. Otherwise, we skip paging out. \TODO{refer to numbers}
+    \item 
+\end{enumerate}
+\subsubsection{Blk driver}
+\subsubsection{Two List \gls{lru}}
+\subsection{Further Work}
+\begin{itemize}
+    \item Implementation of a Multiple Generation Least Recently Used page replacement algorithm.
+    \item Implementation of the pager with a dynamic operating system (Djawula)
+\end{itemize}
 % Claim: the high IPC cost and double bookeeping or whatever that HM paper claims means that it is necessary to have an in kernel pager .
 
 % in order to prove this, I have implemented a PoC userland pager on top of lionsos
