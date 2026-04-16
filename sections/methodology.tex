@@ -54,9 +54,24 @@ The third case is as follows: \begin{enumerate}
     \item Check that this fault is not already being processed. Since we assume that \gls{pd}'s are singlethreaded, if the same fault occurs, the \gls{vaddr} should be the same so we store a per \gls{pd} \gls{vaddr} to check whether the incoming page fault is already being serviced and if so we return early.
     \item We source a frame using the two list \gls{lru} algorithm. This is done as follows: \begin{enumerate}
         \item \TODO{explain tlthingy}
+        \item When the pager \gls{PD} is initialised in \texttt{init()}, the two list algorithm is also initialised.
+        \item Upon initialisation, the pager loops through the frame  \gls{cap}'s it received from microkit and and places them in a stack of free frames.
+        \item When a pager requests a frame, this algorithm returns the top of this free frames stack and if this stack is empty then it finds a frame from the inactive list.
+        \item When a frame is mapped by the pager, it is always added to the head of the active list. 
+        \item When there are less than \texttt{MIN\_INACTIVE\_FRAMES}, \texttt{refill\_inactive(num)} 
+        \item Until there are \texttt{num} frames moved to the inactive list: \begin{enumerate}
+            \item Scan the active list from tail to head,
+            \item If reference bit is set, unset the reference bit and move frame to head of active list, unmap frame.
+            \item Otherwise, move frame to head of inactive list.
+        \end{enumerate}
     \end{enumerate}
-    \item if the sourced frame is allocated to a page and if that page is marked as dirty, then we page it out. Otherwise, we skip paging out. \TODO{refer to numbers}
-    \item 
+    \item If the sourced frame is allocated to a page and if that page is marked as dirty, then we page it out. Otherwise, we skip paging out. \TODO{refer to numbers}
+    \item When paging out, we first find an empty pagefile slot, then request a write to the blk driver which is asynchronous and when finished will call the \texttt{notified()} function.
+    \item When the blk write is finished, the frame is unmapped.
+    \item A page in is required if the page has been paged out before. \TODO{refer to numbers}
+    \item When paging in, we retrieve the slot where the page was paged out to and request a blk read at the slot.
+    \item When the blk read is finished (notified through the \texttt{notified()} function), we copy the buffer into the frame.
+    \item We then map the page to the frame according to the type of fault. A write fault means we mark the dirty bit as true and we map \gls{rw}. Otherwise we map \gls{ro}.
 \end{enumerate}
 \subsubsection{Blk driver}
 \subsubsection{Two List \gls{lru}}
