@@ -1,11 +1,6 @@
+
+% don't go into too much detail here.
 \documentclass[../thesis.tex]{subfiles}
-\begin{document}
-
-\section{Operating Systems}
-The operating system is the lowest level of software directly interfacing with hardware and providing user applications a general, usable interface to operate upon. Essentially, it is an abstract machine and a resource manager working with \texttt{policies} to multiplex and allocate hardware resources through a simplified system call interface. \citep{keylist} \TODO{cite the modern operating systems book here}.
-
-\section{}
-
 % this is kind  of rough here.
 % Operating system
 %     - describe what an operating system is
@@ -28,16 +23,35 @@ The operating system is the lowest level of software directly interfacing with h
 
 % Formal verification
 
-% Linux
+\begin{document}
+\section{Operating System}
+\begin{figure}[H]
+    \centering
+    \subfile{diagrams/operating_system.tex}
+    \caption{\TODO{write caption}}
+    \label{Operating System}\TODO{write label}
+\end{figure}
+The operating system is the lowest level of software directly interfacing with hardware and providing user applications a general, usable interface to operate upon. Essentially, it is an abstract machine and a resource manager working with \texttt{policies} to multiplex and allocate hardware resources through a simplified system call interface. \citep{Tanenbaum_Bos:mos5.pdf}. 
 
-% HongMeng
+\subsection{Kernel}
+A key component of any operating system is the operating system kernel. Although kernels are often referenced synonymously with operating systems, there is an important distinction to be made. Whilst parts of the operating system may run on less privileged modes \TODO{cite something here}, the kernel is specifically the part of the operating system which runs on the highest level of privilege. This means that the kernel has complete control and access over all computer resources in the system. Regarding this kernel, there are several designs, each having their advantages and disadvantages.
 
-% sel4
+\section{Monolithic Kernel}
+A monolithic kernel is a kernel design which has most if not all the operating system components inside the kernel.
 
-% microkit
+\section{Microkernel}
+The converse of the monolithic kernel design is a microkernel which operates on Liedtke's principle of minimality \textit{`A concept is tolerated inside the $\mu$-kernel only if moving it outside the kernel, i.e., permitting competing implementations, would prevent the implementation of the system's required functionality'} \citep{Liedtke_95}. Essentially if a component is not strictly required to be inside the kernel for the system to function, then it should be implemented outside the kernel, i.e. in userland. \TODO{Probably talk about microkernel design, can quote liedtke on microkernel construction, caps and IPC etc. also talk about disadvantages and chen and bershad}
 
-% sddf
+\section{Hybrid Kernel}
+\begin{figure}[H]
+    \centering
+    \includegraphics{Windows_2000_architecture.png}
+    \caption{\TODO{} By The original uploader was Grm wnr at English Wikipedia.Later versions were uploaded by Xyzzy n at en.wikipedia. - Transferred from en.wikipedia to Commons., CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=2242280}
+    \label{Windows NT Architecture} \TODO{I need to do the svg file instead ideally.}
+    
+\end{figure}
+Many modern operating systems are designed with a mixture of the above design philosophies. 
 
-% lionsos
+\section{Djawula}
 
 \end{document}
