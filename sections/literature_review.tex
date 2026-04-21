@@ -7,8 +7,14 @@
 \begin{document}
     \section{Introduction}
     % talk about security pitfalls of monolithic systems and hybrid systems.
+    % AI can expose vulnerabilities
+    The only way to have true security and correctness is through formal verification. This fact is of greater importance now than ever due to the prevalence of AI and its ability to find and potentially exploit security vulnerabilities in software. Claude's Mythos model preview has reportedly already found thousands of security vulnerabilities in every major operating system and web browser. \TODO{The number of bugs scales proportionally to the \gls{sloc} quote paper here} and given the scale of the codebases for such software, it is inevitable that as AI becomes more and more capable, the more vulnerabilities will be found. \TODO{insert gernots cycle diagram} The cycle of having a vulnerability exposed then developers rushing to fix it every time is not a real solution to the problem as the delay between fixes will be costly and given the size of the codebases of major software, it is unfeasible to expect that we will eventually fix all the bugs.
+
+    It is especially imperative that operating system and in particular kernel software is correct and secure. This is as even if user applications were to be correct, they inevitably depend on the operating system, and given a faulty operating system, the behaviour of said user application can not be guaranteed. Unfortunately, the major operating systems currently all have massive codebases and therefore many known security vulnerabilities and bugs which makes them unfit for use in security sensitive applications.
+    \TODO{talk about the paper: Quantitative Vulnerability Assessment of Systems Software}
 
     \section{Other types of kernels}
+    % exokernels and other stuff like that.
     \section{History of Microkernels}
     % maybe talk about previous designs like size and clans and chiefs.
     \section{State-of-the-Art Microkernels}
