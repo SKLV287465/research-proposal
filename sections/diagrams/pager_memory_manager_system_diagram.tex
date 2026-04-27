@@ -1,0 +1,54 @@
+\documentclass[../methodology.tex]{subfiles}
+
+\begin{document}
+\begin{tikzpicture}[
+font=\sffamily,
+>=Latex,
+node distance=2.8cm and 3.2cm,
+box/.style={
+draw,
+rounded corners=10pt,
+very thick,
+minimum width=4.1cm,
+minimum height=2.0cm,
+align=center,
+fill=#1!12
+},
+flow/.style={->, very thick},
+backflow/.style={->, very thick, dashed},
+lab/.style={midway, fill=white, inner sep=1.5pt, font=\small\itshape}
+]
+
+% Nodes
+\node[box=blue] (user) {User Program};
+\node[box=violet, right=of user] (mm) {Memory Manager};
+\node[box=teal, below=of user] (page) {Page};
+\node[box=orange, right=of page] (blk) {Blk Device};
+
+% User <-> Memory manager
+\draw[flow, bend left=18]
+(user.east) to node[lab, above] {malloc()} (mm.west);
+
+\draw[flow, bend left=10]
+(user.east) to node[lab, above right] {free()} ($(mm.west)+(0,-0.35)$);
+
+\draw[backflow, bend left=30]
+($(mm.west)+(0,-0.65)$) to node[lab, below] {remap / return memory} ($(user.east)+(0,-0.65)$);
+
+% User -> Page fault
+\draw[flow, bend right=28]
+(user.south) to node[lab, left] {VM fault} (page.north);
+
+% Memory manager -> Page
+\draw[flow]
+(mm.south) -- node[lab, right] {free()} (page.north);
+
+% Page <-> Block device
+\draw[flow, bend left=8]
+(page.east) to node[lab, above] {page in/out} (blk.west);
+
+\draw[backflow, bend left=8]
+(blk.west) to node[lab, below] {notify} (page.east);
+
+\end{tikzpicture}
+\end{document}

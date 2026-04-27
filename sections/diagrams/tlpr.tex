@@ -1,0 +1,72 @@
+\documentclass[../methodology.tex]{subfiles}
+
+\begin{document}
+
+\begin{tikzpicture}[
+node distance=16mm and 22mm,
+font=\small,
+>=Stealth,
+startstop/.style={
+rectangle, rounded corners=8pt,
+draw, thick, align=center,
+minimum width=24mm, minimum height=9mm,
+fill=blue!8
+},
+process/.style={
+rectangle,
+draw, thick, rounded corners=3pt,
+align=center,
+minimum width=34mm, minimum height=10mm,
+fill=green!8
+},
+decision/.style={
+diamond,
+draw, thick,
+aspect=2,
+align=center,
+inner sep=1pt,
+fill=orange!10
+},
+arrow/.style={->, thick}
+]
+
+\node[startstop] (start) {get frame};
+
+\node[decision, below=of start] (inactiveEmpty)
+{inactive\\list empty?};
+
+\node[decision, below=of inactiveEmpty] (inactiveBig)
+{inactive list\\$>$ threshold?};
+
+\node[process, right=of inactiveBig] (moveInactive)
+{move inactive tail\\to active head};
+
+\node[startstop, below=of moveInactive] (returnInactive)
+{return inactive\\list head};
+
+\node[process, below=of inactiveBig] (refill)
+{refill inactive list};
+
+\node[process, left=of inactiveBig] (moveActive)
+{move active tail\\to active head};
+
+\node[startstop, below=of moveActive] (returnActive)
+{return active\\list head};
+
+\draw[arrow] (start) -- (inactiveEmpty);
+
+\draw[arrow] (inactiveEmpty) -- node[right] {no} (inactiveBig);
+\draw[arrow] (inactiveEmpty.west) -| node[pos=0.25, above] {yes} (moveActive.north);
+
+\draw[arrow] (inactiveBig) -- node[above] {yes} (moveInactive);
+\draw[arrow] (inactiveBig) -- node[above] {no} (refill);
+
+\draw[arrow] (refill) -- (moveInactive);
+
+\draw[arrow] (moveInactive) -- (returnInactive);
+
+\draw[arrow] (moveActive) -- (returnActive);
+
+\end{tikzpicture}
+
+\end{document}

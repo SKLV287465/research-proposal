@@ -1,0 +1,119 @@
+\documentclass[../methodology.tex]{subfiles}
+
+\begin{document}
+
+\begin{tikzpicture}[
+node distance=1.8cm and 3.2cm,
+>=Stealth,
+every node/.style={font=\small},
+startstop/.style={
+ellipse,
+draw=blue!60,
+fill=blue!8,
+thick,
+minimum width=3.2cm,
+minimum height=1cm
+},
+decision/.style={
+diamond,
+draw=purple!70,
+fill=purple!8,
+thick,
+aspect=2.1,
+inner sep=1pt,
+text width=3.4cm,
+align=center
+},
+process/.style={
+rectangle,
+rounded corners=2pt,
+draw=green!50!black,
+fill=green!8,
+thick,
+minimum width=3.4cm,
+minimum height=0.9cm,
+text centered
+},
+line/.style={draw, thick, ->}
+]
+
+% Nodes
+\node[startstop] (fault) {VM Fault};
+
+\node[decision, below=of fault] (assoc)
+{Is page already associated to a frame?};
+
+\node[decision, right=4.6cm of assoc] (writefault1)
+{Is it a write fault?};
+
+\node[startstop, above right=1.5cm and 2.8cm of writefault1] (mapframe)
+{Mark page as reference = true \& Map page};
+
+\node[process, right=3.8cm of writefault1] (dirty1)
+{Mark page dirty};
+
+\node[decision, below=of assoc] (handling)
+{Is VM fault already being served?};
+
+\node[startstop, right=4.6cm of handling] (return)
+{return};
+
+\node[decision, below=of handling] (pagedout)
+{Is page dirty or not have a pagefile slot?};
+
+\node[process, right=4.6cm of pagedout] (pageout)
+{Page out};
+
+\node[decision, below=of pagedout] (slot)
+{Does fault address have pagefile slot?};
+
+\node[process, right=4.6cm of slot] (pagein)
+{Page in};
+
+\node[decision, below=of slot] (writefault2)
+{Is it a write fault?};
+
+\node[process, right=4.6cm of writefault2] (dirty2)
+{Mark page dirty};
+
+\node[startstop, below right=0.2cm and 4.2cm of dirty2] (maprw)
+{Page referenced = true \& Map RW};
+
+\node[startstop, below=1.8cm of writefault2] (mapro)
+{Page referenced = true \& Map RO};
+
+% Connections
+\draw[line] (fault) -- (assoc);
+
+% already associated branch
+\draw[line] (assoc) -- node[above] {yes} (writefault1);
+
+\draw[line] (writefault1) -- node[above] {yes} (dirty1);
+\draw[line] (dirty1) -- (mapframe);
+
+\draw[line] (writefault1) -- node[left] {no} (mapframe);
+
+% not associated branch
+\draw[line] (assoc) -- node[left] {no} (handling);
+
+\draw[line] (handling) -- node[above] {yes} (return);
+\draw[line] (handling) -- node[left] {no} (pagedout);
+
+\draw[line] (pagedout) -- node[above] {yes} (pageout);
+\draw[line] (pageout) -- (slot);
+
+\draw[line] (pagedout) -- node[left] {no} (slot);
+
+\draw[line] (slot) -- node[above] {yes} (pagein);
+\draw[line] (pagein) -- (writefault2);
+
+\draw[line] (slot) -- node[left] {no} (writefault2);
+
+\draw[line] (writefault2) -- node[above] {yes} (dirty2);
+\draw[line] (dirty2) -- (maprw);
+
+\draw[line] (writefault2) -- node[left] {no} (mapro);
+
+\end{tikzpicture}
+
+\end{document}
