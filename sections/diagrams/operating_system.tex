@@ -1,0 +1,68 @@
+\documentclass[../background.tex]{subfiles}
+
+\begin{document}
+
+\begin{center}
+\begin{tikzpicture}[
+    layer/.style={
+        draw,
+        rounded corners=10pt,
+        minimum width=11cm,
+        minimum height=1.8cm,
+        align=center,
+        thick
+    },
+    arrow/.style={->, thick, draw=black!50}
+]
+
+% Users
+\node[layer, fill=gray!10] (users) {
+    \textbf{\large Users}
+};
+
+% Applications
+\node[layer, below=0.4cm of users, fill=blue!5] (apps) {
+    \textbf{\large Application Programs} \\[4pt]
+    {\small Shells \quad Editors \quad Compilers \quad Browsers}
+};
+
+% OS box
+\node[layer, below=0.4cm of apps, fill=green!5, minimum height=3.2cm] (os) {};
+
+% OS title
+\node[anchor=north, yshift=-6pt] at (os.north) {
+    \textbf{\large Operating System}
+};
+
+% Divider line (system call interface)
+\draw[thick, draw=black!30]
+([xshift=8pt,yshift=-45pt]os.north west) --
+([xshift=-8pt,yshift=-45pt]os.north east);
+
+% System call label
+\node[anchor=north, font=\small\bfseries, text=black!70]
+at ([yshift=-25pt]os.north) {System Call Interface};
+
+% OS internals
+\node[anchor=center] at ([yshift=-20pt]os.center) {
+    {\small
+    Process/Time/Memory Management \quad
+    $\cdot$ \quad
+    Device Drivers}
+};
+
+% Hardware
+\node[layer, below=0.4cm of os, fill=orange!10] (hw) {
+    \textbf{\large Hardware} \\[4pt]
+    {\small CPU \quad Main Memory \quad Disks \quad Network Interfaces}
+};
+
+% Arrows
+\draw[arrow] (users) -- (apps);
+\draw[arrow] (apps) -- node[right, font=\small]{system calls} (os.north);
+\draw[arrow] (os) -- (hw);
+
+\end{tikzpicture}
+\end{center}
+
+\end{document}

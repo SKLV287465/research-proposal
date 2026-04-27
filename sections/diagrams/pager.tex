@@ -1,8 +1,9 @@
-\documentclass[tikz, border=15pt]{standalone}
-\usetikzlibrary{arrows.meta, positioning, calc, fit, backgrounds, shadows, decorations.pathreplacing, decorations.markings}
+\documentclass[../methodology.tex]{subfiles}
 
 \begin{document}
 \begin{tikzpicture}[
+    scale=0.65,
+    transform shape,
     node distance=1.2cm and 1.5cm,
     %% Base module style
     module/.style={
@@ -93,10 +94,11 @@
     dashdoublearrow/.style={
         {Stealth[scale=1.25]}-{Stealth[scale=1.25]}, thick, dashed
     },
-    %% Annotation label
+    %% Annotation label  *** FIX: added align=center so \\ works ***
     annot/.style={
         font=\sffamily\tiny,
-        text=black!70
+        text=black!70,
+        align=center
     }
 ]
 
@@ -122,7 +124,7 @@
 % IPC endpoints between clients and pager
 \node[ipc] (ep1) at (0,   -2.4) {EP: fault};
 \node[ipc] (ep2) at (4.5, -2.4) {EP: fault};
-\node[ipc] (ep3) at (11.5,-2.4) {EP: fault};b
+\node[ipc] (ep3) at (11.5,-2.4) {EP: fault};
 
 \draw[arrow, blue!50, thin] (client1.south) -- (vcap1.north);
 \draw[arrow, blue!50, thin] (client2.south) -- (vcap2.north);
@@ -143,7 +145,7 @@
     {Two-List LRU\\{\tiny get\_frame() / pin()}};
 
 % Clock / reference bit note
-\node[annot, align=center] at (9.0, -3.8)
+\node[annot] at (9.0, -3.8)
     {\textit{clock ref bit tracked}};
 
 % ============================================================
@@ -216,7 +218,7 @@
     (inactive_n2.north);
 
 %% Evict (inactive tail -> free)
-\draw[arrow, bend left=25, gray!65, thick]
+\draw[arrow, gray!65, thick]
     (inactive_tail.east)
     to[out=0, in=0]
     node[right, annot] {free\_frame()\\evict\_page()}
@@ -355,8 +357,8 @@
     (ep1.south)
     -- node[left, annot] {VM Fault\\(IPC)}
     (fault.north);
-\draw[dasharrow, violet!50] (ep2.south)  -- ++(0,-1.0) -| (fault.north);
-\draw[dasharrow, violet!50] (ep3.south)  -- ++(0,-1.0) -| (fault.north);
+\draw[dasharrow, violet!50] (ep2.south) -- ++(0,-1.0) -| (fault.north);
+\draw[dasharrow, violet!50] (ep3.south) -- ++(0,-1.0) -| (fault.north);
 
 %% Clients -> Memory Manager (PPC)
 \draw[darrow, orange!65]
@@ -410,7 +412,7 @@
 %% Notify Handler -> Block Driver (notification channel)
 \draw[darrow, green!60]
     (notified.south)
-    -- node[left, annot, align=center] {enqueue\_req()\\microkit\_notify()}
+    -- node[left, annot] {enqueue\_req()\\microkit\_notify()}
     (blk.north);
 
 %% Block Response -> Notify Handler (completion)
@@ -449,7 +451,7 @@
     (kernel.north -| blkbox.south);
 
 %% seL4 -> kernel note
-\node[annot, align=center] at (9.5, -16.25)
+\node[annot] at (9.5, -16.25)
     {\textit{All cross-PD communication via seL4 IPC / Notifications.
      \quad Physical memory managed through Untyped capabilities.}};
 

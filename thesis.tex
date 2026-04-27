@@ -25,7 +25,12 @@
 \usepackage{ltablex}
 \usepackage{multirow}
 \usepackage{subfiles}
+\usepackage{tikz}
+
+\usetikzlibrary{arrows.meta, positioning, calc, fit, backgrounds, shadows, decorations.pathreplacing, decorations.markings, positioning, shapes.geometric}
+
 \usepackage{xcolor}
+\usepackage{float}
 
 
 \usepackage[final]{listings}    % draft will suppress listings!
@@ -155,7 +160,8 @@
 \newacronym{ppc}{PPC}{protected procedure call}
 \newacronym{poc}{PoC}{proof of concept}
 \newacronym{lru}{LRU}{least recently used}
-
+\newacronym{ipc}{IPC}{interprocess communication}
+\newacronym{sloc}{SLOC}{source lines of code}
 \begin{document}
 
 %% Capitalisation of cross references
@@ -228,12 +234,6 @@ Please refer to the \href{https://www.unsw.edu.au/content/dam/pdfs/research/high
 
 \chapter{Introduction}\label{s:intro}
 \subfile{sections/introduction.tex}
-
-\chapter{Background}\label{s:background}
-\subfile{sections/background.tex}
-Present the background -- focus on setting the scene for your
-research, why you're doing this etc. Do not aim for
-completeness here.
 
 \chapter{Literature Review}\label{s:lit_review}
 

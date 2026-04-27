@@ -8,6 +8,12 @@ The broad justification for this thesis is to ultimately explore the feasibility
 
 
 \section{LionsOS Userland Pager}
+\begin{figure}[H]
+    \centering
+    \subfile{diagrams/pager.tex}
+    \caption{\TODO{write caption for userland pager/memory manager}}
+    \label{userland pager system diagram}\TODO{write label for userland pager/memory manager}
+\end{figure}
 LionsOS is currently a static operating system. Essentially, all programs and even memory regions are loaded into memory before the system starts and these programs and importantly memory regions are fixed throughout the lifespan of the system. Whilst this is sufficient for embedded systems with fixed, predictable workloads, it is prohibitive for dynamic workloads, especially for those with changing memory requirements. One of the requirements for a dynamic operating system is a way to bypass this limitation and this can be done through a pager. Therefore I have implemented a \gls{poc} userland pager for LionsOS to test performance and feasibility.
 
 \subsection{Assumptions and Limitations}
@@ -54,7 +60,7 @@ The third case is as follows: \begin{enumerate}
     \item Check that this fault is not already being processed. Since we assume that \gls{pd}'s are singlethreaded, if the same fault occurs, the \gls{vaddr} should be the same so we store a per \gls{pd} \gls{vaddr} to check whether the incoming page fault is already being serviced and if so we return early.
     \item We source a frame using the two list \gls{lru} algorithm. This is done as follows: \begin{enumerate}
         \item \TODO{explain tlthingy}
-        \item When the pager \gls{PD} is initialised in \texttt{init()}, the two list algorithm is also initialised.
+        \item When the pager \gls{pd} is initialised in \texttt{init()}, the two list algorithm is also initialised.
         \item Upon initialisation, the pager loops through the frame  \gls{cap}'s it received from microkit and and places them in a stack of free frames.
         \item When a pager requests a frame, this algorithm returns the top of this free frames stack and if this stack is empty then it finds a frame from the inactive list.
         \item When a frame is mapped by the pager, it is always added to the head of the active list. 
