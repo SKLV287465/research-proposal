@@ -1,0 +1,44 @@
+\documentclass[../research_plan.tex]{subfiles}
+
+
+
+\begin{document}
+\begin{ganttchart}[
+    hgrid,
+    vgrid,
+    x unit=0.23cm,
+    y unit title=0.7cm,
+    y unit chart=0.75cm,
+    title height=1,
+    bar height=0.5,
+    title/.style={fill=blue!10, draw=none},
+    bar/.style={draw=none, rounded corners=2pt, fill=blue!60},
+    group/.style={draw=none, rounded corners=2pt, fill=green!60!black},
+    milestone/.style={fill=red!70, draw=none},
+    title label font=\bfseries\small,
+    bar label font=\small,
+    milestone label font=\small\itshape,
+    progress label text={}
+]{1}{104}
+
+\gantttitle{Year 1}{52}
+\gantttitle{Year 2}{52} \\
+\gantttitlelist{1,4,7,10,13,16,19,22,25,28,31,34,37,40,43,46,49,52}{3}
+\gantttitlelist{1,4,7,10,13,16,19,22,25,28,31,34,37,40,43,46,49,52}{3} \\
+
+\ganttbar[bar/.append style={fill=green!50!black}]{Pager start}{1}{6} \\
+\ganttbar[bar/.append style={fill=blue!60}]{Pager impl.}{7}{18} \\
+\ganttbar[bar/.append style={fill=orange!90!black}]{Microbench}{19}{19} \\
+\ganttbar[bar/.append style={fill=orange!90!black}]{Macrobench}{20}{20} \\
+\ganttbar[bar/.append style={fill=green!50!black}]{Learn Djawula}{21}{21} \\
+\ganttbar[bar/.append style={fill=blue!60}]{Block virt.}{22}{30} \\
+\ganttbar[bar/.append style={fill=orange!90!black}]{Refactor}{31}{31} \\
+\ganttbar[bar/.append style={fill=orange!90!black}]{Blk. bench.}{32}{32} \\
+\ganttbar[bar/.append style={fill=gray!70}]{Unknown}{33}{51} \\
+\ganttbar[bar/.append style={fill=red!70}]{Cap. micro.}{52}{52} \\
+\ganttbar[bar/.append style={fill=blue!60}]{Fork + bench}{53}{82} \\
+\ganttbar[bar/.append style={fill=red!70}]{Thesis}{83}{89} \\
+
+\end{ganttchart}%
+\end{document}
+

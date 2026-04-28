@@ -40,7 +40,7 @@ Although kernels are often referenced synonymously with operating systems, there
 \begin{figure}[H]
     \centering
     \resizebox{\textwidth}{!}{\includegraphics{monolithic.png}}
-    \caption{Types of Kernels\\ credit: By Golftheman - http://en.wikipedia.org/wiki/Image:OS-structure.svg, Public Domain, https://commons.wikimedia.org/w/index.php?curid=4397379}
+    \caption{Types of Kernels \TODO{make image svg}\\ credit: By Golftheman - http://en.wikipedia.org/wiki/Image:OS-structure.svg, Public Domain, https://commons.wikimedia.org/w/index.php?curid=4397379}
     \label{Types of Kernels}
 \end{figure}
 \section{Monolithic Kernel}
@@ -63,16 +63,19 @@ The concept of the microkernel was first defined in Brinch Hansen's work on the 
 Hansen outlines the concept of processes as an execution of one or more programs in a storage area, with the ability to start, stop and remove processes and also communicate synchronously with other processes, with the \textit{nucleus} facilitating these actions. Processes would form a tree, the parent being able to control (start, stop or remove) its children and its children's descendants. In such system, the \textit{nucleus} would be analogous to a microkernel and an \textit{operating system} would be the root of the hierarchy tree.
 
 \subsection{First Generation Microkernels}
+Mach is one of the earliest examples of a microkernel.
 \TODO{go into how the concept of a microkernel has developed since nucleus.}
-
+\TODO{talk about mach microkernel}
+\TODO{talk about other microkernels}
 
 \subsection{Second Generation Microkernels}
-
+\TODO{talk about L34}
 \subsection{Third Generation Microkernels}
-
+\TODO{talk about L4Re}
+\TODO{talk about other 3gen microkernels}
 \subsection{General Purpose Microkernels}
 \subsubsection{Mach 3.0}
-
+\TODO{talk about mach3.0}
 
 \subsubsection{HongMeng}
 An example of a state of the art microkernel based general purpose operating system is HongMeng. 
@@ -119,9 +122,11 @@ Library operating systems as an idea are also highly flexible. Like any operatin
 
     \subsection{Unikernel}
     A unikernel can be thought of 
+    \TODO{talk about Unikernels properly here.}
 
+\subsection{Conclusions}
 % This was something but now it can be part of the conclusion i guess.
-Currently, monolithic and hybrid kernels dominate the general purpose operating system space and this is despite the software technologically superior design of microkernels \citep{Liedtke_95}. Even the only exception HongMeng includes many design compromises in order to achieve higher performance, to the point that one may argue that HongMeng is no longer a microkernel but instead a hybrid kernel. Having demonstrated that LionsOS can achieve higher performance than Linux on embedded workflows \citep{Heiser_VCJGNLDZAZWPDB_25}, and with a well-designed microkernel (seL4) as the kernel, is it possible to create a performant operating system?
+While Exokernels and Unikernels represent an interesting but less investigated orthogonal option for secure and performant general purpose operating systems, currently monolithic and hybrid kernels dominate the general purpose operating system space and this is despite the software technologically superior design of microkernels \citep{Liedtke_95}. Even the only exception HongMeng includes many design compromises in order to achieve higher performance, to the point that one may argue that HongMeng is no longer a microkernel but instead a hybrid kernel. Having demonstrated that LionsOS can achieve higher performance than Linux on embedded workflows \citep{Heiser_VCJGNLDZAZWPDB_25}, and with a well-designed microkernel (seL4) as the kernel, is it possible to create a performant operating system?
 
     \TODO{talk about how exokernels could be a similar solution with some tradeoffs}
 \end{document}
