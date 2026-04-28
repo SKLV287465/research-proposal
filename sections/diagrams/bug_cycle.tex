@@ -1,0 +1,31 @@
+\documentclass[../literature_review.tex]{subfiles}
+
+\begin{document}
+\begin{tikzpicture}[
+    >=Latex,
+    font=\sffamily,
+    box/.style={
+        draw,
+        rounded corners,
+        thick,
+        minimum width=3.2cm,
+        minimum height=1.2cm,
+        align=center
+    },
+    arr/.style={->, thick}
+]
+
+\node[box, fill=blue!10, draw=blue!60] (d1) at (0,0) {Bug Discovery};
+\node[box, fill=red!10, draw=red!60] (e) at (5,0) {Bug Exploitation};
+\node[box, fill=green!10, draw=green!60] (f) at (0,-3) {Bug Fixing};
+\node[box, fill=yellow!20, draw=orange!80] (m) at (5,-3) {\$ Money Lost};
+
+\draw[arr] (d1) -- (e);
+\draw[arr] (e) -- (f);
+\draw[arr] (f) -- (d1);
+
+\draw[arr, dashed, red!70] (e) -- (m);
+\draw[arr, dashed, red!70] (f) -- (m);
+
+\end{tikzpicture}
+\end{document}
