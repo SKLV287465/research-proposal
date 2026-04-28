@@ -58,10 +58,12 @@ A study into how a multiserver operating system based on a verified microkernel 
 As compared to monolithic systems, \gls{mkbs}'s take on an inherent cost when servicing a system call. During a syscall on a \gls{mkbs} at least four mode switches and two context switches is required: Client invokes kernel's IPC operating (2 mode switches) and so does the server (2 mode switches). The kernel in delivering the messages switches context from client to server and back. Meanwhile, the same syscall on a monolithic system only requires two mode switches (one to trap into kernel mode and another to resume execution in usermode) \citep{Biggs_LH_18}. Hence, with the implementation of a performant \gls{mkbs} it is a question of how much of this cost is amortised by other procedures and how much can we optimise the kernel and the operating system servers of the \gls{mkbs} given that the microkernel codebase is magnitudes smaller and the individual components more modular and easier to reason about.
 
 \subsection{Early Microkernel Concept} 
-The concept of the microkernel was first defined in Brinch Hansen's work on the RC 4000 multiprogramming system \textit{The Nucleus of a Multiprogramming System} which outlines a system substrate including proccess management including synchronous \gls{ipc}, process creation, control \citep{Brinch_Hansen_70}. This \textit{nucleus} allowed one to build their own system around it, implementing one's own policies as required for the task, much like the role a modern microkernel would play in a microkernel based operating system. 
-\TODO{delve into the details of Nucleus}
+The concept of the microkernel was first defined in Brinch Hansen's work on the RC 4000 multiprogramming system \textit{The Nucleus of a Multiprogramming System} which outlines a system substrate including proccess management including synchronous \gls{ipc}, process creation, control \citep{Brinch_Hansen_70}. This \textit{nucleus} allowed one to build their own system around it, implementing one's own policies as required for the task, much like the role a modern microkernel would play in a microkernel based operating system. This generality is what is innovative about \textit{nucleus} as it does not make any assumptions about the workload of the user, instead allowing the user to extend the \textit{nucleus} to create a system tailored to their requirements through the minimal interface which the \textit{nucleus provides}.
+
+Hansen outlines the concept of processes as an execution of one or more programs in a storage area, with the ability to start, stop and remove processes and also communicate synchronously with other processes, with the \textit{nucleus} facilitating these actions. Processes would form a tree, the parent being able to control (start, stop or remove) its children and its children's descendants. In such system, the \textit{nucleus} would be analogous to a microkernel and an \textit{operating system} would be the root of the hierarchy tree.
 
 \subsection{First Generation Microkernels}
+\TODO{go into how the concept of a microkernel has developed since nucleus.}
 
 
 \subsection{Second Generation Microkernels}
@@ -70,8 +72,13 @@ The concept of the microkernel was first defined in Brinch Hansen's work on the 
 
 \subsection{General Purpose Microkernels}
 \subsubsection{Mach 3.0}
+
+
 \subsubsection{HongMeng}
+An example of a state of the art microkernel based general purpose operating system is HongMeng. 
+
 \subsubsection{Djawula}
+
 
 
 
