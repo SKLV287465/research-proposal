@@ -28,36 +28,36 @@ The broad justification for this thesis is to ultimately explore the feasibility
 \end{figure}
 
 \subsection{Design Problems}
-LionsOS is a static operating system. What this means is that all applications and memory regions etc. are loaded before runtime and these applications run for the lifetime of the system. This forms a problem regarding the implementation of the pager and memory manager on LionsOS as the memory manager is supposed to grant extra memory to a protection domain on request. However, where should this memory come from? It is important to note that the microkit currently does not support the retyping of memory in userland. This means that it is impossible without extensively changing microkit to even change the page tables during runtime. The solution to this problem that I have come up with is to give each protection domain a memory region which acts like a heap. This heap is of course fixed in size, but through paging, we can have it such that the heap seems as large as required from the perspective of the protection domain. \textit{Note: this implementation is only a proof of concept design to run benchmarks to compare paging performance against Linux.}
+LionsOS is a static operating system. What this means is that all applications and memory regions etc. are loaded before runtime and these applications run for the lifetime of the system. This forms a problem regarding the implementation of the pager and memory manager on LionsOS as the memory manager is supposed to grant extra memory to a \gls{pd} on request. However, where should this memory come from? It is important to note that the microkit currently does not support the retyping of memory in userland. This means that it is impossible without extensively changing microkit to even change the page tables during runtime. The solution to this problem that I have come up with is to give each \gls{pd} a memory region which acts like a heap. This heap is of course fixed in size, but through paging, we can have it such that the heap seems as large as required from the perspective of the \gls{pd}'. \textit{Note: this implementation is only a proof of concept design to run benchmarks to compare paging performance against Linux.}
 \subsection{Limitations of the Design}
 \begin{itemize}
-    \item There is a static upper limit of the number of protection domains that are supported by the pager, defined as \texttt{MAX\_PDS}.
-    \item Protection domains that are to be supported by the pager must be specified as `children' of the pager in the system description file.
+    \item There is a static upper limit of the number of \gls{pd}'s that are supported by the pager, defined as \texttt{MAX\_PDS}.
+    \item \gls{pd}'s that are to be supported by the pager must be specified as `children' of the pager in the \gls{sdf}.
     \item The `children' of the pager must have an ID less than \texttt{MAX\_PDS}.
     \item The memory manager only allocates 4k size blocks.
-    \item The Pager must be named `pager' in the system description file.
+    \item The Pager must be named `pager' in the \gls{sdf}.
     \item The number of available frames is fixed upon loading the system.
     \item The `heap' allocated to by the memory manager always starts at 0x8000000000.
-    \item The `heap' must be specified in the system description file as an unbacked memory region. 
-    \item Protection domains are singlethreaded.
-    \item `Child' protection domains of the pager do not have other faults except page faults. 
+    \item The `heap' must be specified in the \gls{sdf} as an unbacked memory region. 
+    \item \gls{pd}'s are singlethreaded.
+    \item `Child' \gls{pd}'s of the pager do not have other faults except page faults. 
 \end{itemize} 
 \subsection{Sdfgen}
-In order to support such a heap described in section 2.1, we need to implement a memory region which actually remains unmapped from the vspace of the protection domain of the client. In order to do this, we need to have a flag in the memory region object of the system description file to mark a memory region to remain unmapped. This memory region also needs to have its frame caps to be accessible by and mapped into the pager protection domain to do paging operations. In order to support this, I have added a new optional boolean field identified as `backed'. By default memory regions are backed=true, and if they are backed=false, mappings are not done, only the page table structures are created, the memory region mapped to a protection domain named `pager' and the frame caps passed to the protection domain named `pager'. 
+In order to support such a heap described in section 2.1, we need to implement a memory region which actually remains unmapped from the vspace of the \gls{pd} of the client. In order to do this, we need to have a flag in the memory region object of the \gls{sdf} to mark a memory region to remain unmapped. This memory region also needs to have its frame \gls{cap}'s to be accessible by and mapped into the pager \gls{pd} to do paging operations. In order to support this, I have added a new optional boolean field identified as `backed'. By default memory regions are backed=true, and if they are backed=false, mappings are not done, only the page table structures are created, the memory region mapped to a \gls{pd} named `pager' and the frame \gls{cap}'s passed to the \gls{pd} named `pager'. 
 \\\\
-This is implemented in \href{https://github.com/au-ts/microkit_sdf_gen}{sdfgen} in branch `joshua/unbacked\_mrs' as an additional optional field in the constructor of \texttt{MemoryRegion}. It is also possible to bypass the sdfgen entirely by writing up the system description file by hand and including an attribute `backed=false' in the memory region xml object.
+This is implemented in \href{https://github.com/au-ts/microkit_sdf_gen}{sdfgen} in branch `joshua/unbacked\_mrs' as an additional optional field in the constructor of \texttt{MemoryRegion}. It is also possible to bypass the sdfgen entirely by writing up the \gls{sdf} by hand and including an attribute `backed=false' in the memory region \gls{xml} object.
 \subsection{Microkit}
 Microkit reads the SDF to load and run the system described in the SDF. I have modified microkit in order to implement the functionality described in the SDF.
-\subsubsection{Special Protection Domains}
-There are special protection domains which are named as below: \begin{itemize}
+\subsubsection{Special \gls{pd}'s}
+There are special \gls{pd}'s which are named as below: \begin{itemize}
     \item pager
     \item memory\_manager
 \end{itemize}
-These are the required components to make the userland pager functional. The microkit when looping through the protection domains whilst building recognises these protection domain by their name string and implements special behaviour for these protection domains.
+These are the required components to make the userland pager functional. The microkit when looping through the \gls{pd}'s whilst building recognises these \gls{pd} by their name string and implements special behaviour for these \gls{pd}'s.
 \paragraph{memory\_manager}
-Any protection domains which has a ppc channel with memory manager should have a integer global variable named \textit{memory\_manager\_ep} as the microkit will on compile time write the ep number to this symbol. This will be used to do mymalloc and myfree function calls.
+Any \gls{pd}'s which has a ppc channel with memory manager should have a integer global variable named \textit{memory\_manager\_ep} as the microkit will on compile time write the ep number to this symbol. This will be used to do mymalloc and myfree function calls.
 \paragraph{pager}
-The pager needs to have all of the frames of the `heaps' mapped into its vspace and needs to have all of the frame caps in order to map the frames to the client protection domains' vspaces. Microkit usually loops through the memory regions, creates frame caps for them and maps the frames using these frame caps into their respective protection domains as specified by the mappings in the sdf. The modification which I have made in microkit intercepts the mapping of frames and checks whether or not the memory region is `backed', if not backed, the frame capability is stored in an array alongside with the id of the protection domain which the `heap' is mapped to. The frame is also mapped into the pager. The array is written as a symbol into the pager's elf so that the pager has access to the frame caps.
+The pager needs to have all of the frames of the `heaps' mapped into its vspace and needs to have all of the frame \gls{cap}'s in order to map the frames to the client \gls{pd}'s' vspaces. Microkit usually loops through the memory regions, creates frame \gls{cap}'s for them and maps the frames using these frame \gls{cap}'s into their respective \gls{pd}'s as specified by the mappings in the sdf. The modification which I have made in microkit intercepts the mapping of frames and checks whether or not the memory region is `backed', if not backed, the frame \gls{cap} is stored in an array alongside with the id of the \gls{pd} which the `heap' is mapped to. The frame is also mapped into the pager. The array is written as a symbol into the pager's elf so that the pager has access to the frame \gls{cap}'s.
 \subsubsection{Microkit Interface}
 Wrapper functions were implemented for seL4\_ARM\_map/unmap functionality in microkit.h to allow the pager to do mapping operations.
 \subsection{LionsOS}
@@ -65,15 +65,15 @@ LionsOS is used instead of microkit in order to have easier access to drivers th
 \subsubsection{User Application}
 The user application is very simple to implement. There should be a global integer variable \texttt{memory\_manager\_ep} which is passed to the functions \texttt{myfree()} and \texttt{mymalloc()} which can be found in \texttt{types.h}. These functions talk to the memory manager and \texttt{mymalloc()} returns the address of a 4k block of memory which is lazily mapped. \texttt{myfree()} frees the 4k memory block at the address provided as an argument.
 \subsubsection{Memory Manager}
-The memory manager implementation very simple for a proof of concept. Its role is to provide 4k blocks and to free these blocks. Given that malloc does not exist in LionsOS, we statically create an array of \texttt{struct mmap\_node}s which are given addresses starting from 0x8000000000, representing 4k blocks in memory. They can be indexed by their address rounded down to nearest 4k. There are also two doubly linked lists, one for used and unused blocked respectively. Each client protection domain has such an array and lists attributed to it.
+The memory manager implementation very simple for a proof of concept. Its role is to provide 4k blocks and to free these blocks. Given that malloc does not exist in LionsOS, we statically create an array of \texttt{struct mmap\_node}s which are given addresses starting from 0x8000000000, representing 4k blocks in memory. They can be indexed by their address rounded down to nearest 4k. There are also two doubly linked lists, one for used and unused blocked respectively. Each client \gls{pd} has such an array and lists attributed to it.
 \\\\
-Upon intialisation, the nodes are all added to the unused list. When \texttt{mymalloc()} is called, a node is taken from the unused list and added to the used list. When \texttt{myfree()} is called, the node is found through indexing into the array of nodes using the address and that node is removed from the used list and added to the freed list. The memory manager also has a ppc ep with the pager and when free is called, a message is sent to the pager protection domain in order to wipe the pagefile slot and frame.
+Upon intialisation, the nodes are all added to the unused list. When \texttt{mymalloc()} is called, a node is taken from the unused list and added to the used list. When \texttt{myfree()} is called, the node is found through indexing into the array of nodes using the address and that node is removed from the used list and added to the freed list. The memory manager also has a ppc ep with the pager and when free is called, a message is sent to the pager \gls{pd} in order to wipe the pagefile slot and frame.
 \subsubsection{Pager}
 \paragraph{Data Structures}
 There are two things the need to be kept track of: \textit{pagefile slots} \& \textit{frames/pages}.\\\\
 The way that I keep track of pagefile slots is through an array. The slot index represents the position of the slot in the file. Essentially I abstract the pagefile as an array. There is a counter which represents the highest slot number which has ever been used so if a new file slot is required, that number can be given and incremented up. There is also a stack which track the freed slots from when a page is freed. If a slot is requested, the stack is checked first then the highest slot number is incremented.
 \\\\
-Instead of keeping track of page table entries as one normally would in a traditional pager implementation, since seL4 does not provide transparency into page tables, I have chosen to keep track of frame caps and a pseudo page table entry. pseudo page table entries are kept in an array of arrays, which are indexed by pd\_idx and address / 4096. The struct carrying the frame caps are what is used in the page replacement algorithm. They are stored in three lists, a free list, a inactive list and a active list.
+Instead of keeping track of page table entries as one normally would in a traditional pager implementation, since seL4 does not provide transparency into page tables, I have chosen to keep track of frame \gls{cap}'s and a pseudo page table entry. pseudo page table entries are kept in an array of arrays, which are indexed by pd\_idx and address / 4096. The struct carrying the frame \gls{cap}'s are what is used in the page replacement algorithm. They are stored in three lists, a free list, a inactive list and a active list.
 
 \paragraph{Two List Page Replacement}
 \begin{figure}[H]
@@ -120,7 +120,7 @@ Paging follows the flow shown above, except that paging in and out operations ar
 % Microkit is responsible for loading the system. Hence, it is what reads the \gls{sdf} and loads the contents to run the system. In order to support the function of the userland pager, I have made the following modifications to this loading process: \begin{enumerate}
 %     \item Microkit now recognises the `unbacked' attribute from the \gls{sdf} and this is reflected in the Microkit code.
 %     \item Unbacked Memory Regions are now not backed by frames during loading. However, the paging structures for mappings into this memory regions are created due to the fact that retyping of untyped memory is not supported at user level.
-%     \item As \gls{cap}'s in general are not present in userland normally for Microkit and LionsOS, I collect all unbacked memory regions' frame \gls{cap}'s into an array and map this array into the pager's elf as a symbol.
+%     \item As \gls{\gls{cap}'}'s in general are not present in userland normally for Microkit and LionsOS, I collect all unbacked memory regions' frame \gls{\gls{cap}'}'s into an array and map this array into the pager's elf as a symbol.
 %     \item Since the pager will need to be able to write and read from the frames that are to be mapped, all frames from unbacked memory regions are mapped with read and write permissions at load time into the pager's \gls{vspace}.
 % \end{enumerate}
 
@@ -129,9 +129,9 @@ Paging follows the flow shown above, except that paging in and out operations ar
 % The memory manager must be linked with other user \gls{pd}'s through channels in the \gls{sdf} and memory allocations and frees are done through \gls{ppc}'s.
 
 % \subsection{Pager}
-% From compilation, the pager is given the number of frames for mapping and an array of frame \gls{cap}'s. The pager which I have implemented uses a two list \gls{lru} page replacement algorithm, as an attempted analogue for the Linux page replacement algorithm in order to run benchmarks page fault latency benchmarks against Linux. The two list \gls{lru} is implemented with two doubly linked lists and a list of free frames. There are naturally implementation differences between the Linux two list \gls{lru} algorithm and this algorithm. The heuristics in the decision in moving pages to and from the active/inactive lists are much more complex than in my implementation and my implementation has a known number of frames to be mapped per \gls{pd}. Because of this, I found it more convenient to write the page replacement algorithm around `frames' instead of pages. Furthermore, as the reference bit and dirty bit is not possible to access in userland in a microkit system, we use a software maintained referenced and dirty bit.
+% From compilation, the pager is given the number of frames for mapping and an array of frame \gls{\gls{cap}'}'s. The pager which I have implemented uses a two list \gls{lru} page replacement algorithm, as an attempted analogue for the Linux page replacement algorithm in order to run benchmarks page fault latency benchmarks against Linux. The two list \gls{lru} is implemented with two doubly linked lists and a list of free frames. There are naturally implementation differences between the Linux two list \gls{lru} algorithm and this algorithm. The heuristics in the decision in moving pages to and from the active/inactive lists are much more complex than in my implementation and my implementation has a known number of frames to be mapped per \gls{pd}. Because of this, I found it more convenient to write the page replacement algorithm around `frames' instead of pages. Furthermore, as the reference bit and dirty bit is not possible to access in userland in a microkit system, we use a software maintained referenced and dirty bit.
 % \subsubsection{Init}
-% Upon initialisation, the pager loops through the array of frame \gls{cap}'s and places each frame in the list of free frames. This is as all frames start off as unmapped.
+% Upon initialisation, the pager loops through the array of frame \gls{\gls{cap}'}'s and places each frame in the list of free frames. This is as all frames start off as unmapped.
 % \subsubsection{Paging}
 % The entry point to the pager is \texttt{fault()}. This is as the pager is the `parent' of the supported \gls{pd}'s and Microkit sends faults to the parent and if one does not exist then to the Microkit Monitor. The reasons why a fault occurs is as follows: \begin{enumerate}
 %     \item Write fault as page is mapped as \gls{ro}. This occurs in order to keep track of whether a page is `dirty' or not with software.
@@ -144,7 +144,7 @@ Paging follows the flow shown above, except that paging in and out operations ar
 %     \item We source a frame using the two list \gls{lru} algorithm. This is done as follows: \begin{enumerate}
 %         \item \TODO{explain tlthingy}
 %         \item When the pager \gls{pd} is initialised in \texttt{init()}, the two list algorithm is also initialised.
-%         \item Upon initialisation, the pager loops through the frame  \gls{cap}'s it received from microkit and and places them in a stack of free frames.
+%         \item Upon initialisation, the pager loops through the frame  \gls{\gls{cap}'}'s it received from microkit and and places them in a stack of free frames.
 %         \item When a pager requests a frame, this algorithm returns the top of this free frames stack and if this stack is empty then it finds a frame from the inactive list.
 %         \item When a frame is mapped by the pager, it is always added to the head of the active list. 
 %         \item When there are less than \texttt{MIN\_INACTIVE\_FRAMES}, \texttt{refill\_inactive(num)} 
