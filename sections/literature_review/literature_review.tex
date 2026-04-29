@@ -1,0 +1,62 @@
+% Give a critical review of the developments/progress and the current state of the art in the field related to your
+% research topic. [ 8-12 pages including visuals) 
+
+
+% the
+\documentclass[../../thesis.tex]{subfiles}
+\begin{document}
+
+\section{Introduction}
+    % talk about security pitfalls of monolithic systems and hybrid systems.
+    % AI can expose vulnerabilities
+    The only way to have true security and correctness is through formal verification. This fact is of greater importance now than ever due to the prevalence of AI and its ability to find and potentially exploit security vulnerabilities in software. Claude's Mythos \gls{ai} model preview has reportedly already found thousands of security vulnerabilities in every major operating system and web browser.
+    
+    Intuitively, the number of bugs in a computing base is proportional to its size. Hatton's study estimates 6 faults per k\gls{sloc} with a best case density of 0.5-1/k\gls{sloc} \citep{Hatton_97} while another estimates 1-3/k\gls{sloc} \citep{Mohagheghi_CKS_04}, and given the scale of the codebases for such software, it is inevitable that as AI becomes more and more capable, the more vulnerabilities will be found. 
+    \begin{figure}[H]
+        \centering
+        \resizebox{\textwidth}{!}{
+            \subfile{../diagrams/bug_cycle.tex}
+        }
+        \caption{Bug Cycle}
+        \label{Bug Cycle}
+    \end{figure}
+    The cycle of having a vulnerability exposed then developers rushing to fix it every time is not a real solution to the problem as the delay between fixes will be costly and given the size of the codebases of major software, it is unfeasible to expect that we will eventually fix all the bugs.
+
+    It is important that operating systems are correct and secure. User applications depend on operating system services and it is given that even if user applications were to be completely correct, if run on a faulty operating system, their correctness cannot be guaranteed. What is even more important is the \gls{tcb}, which is any code running in a privileged mode and can therefore bypass security \citep{Rushby_81}. This is usually synonymous with the kernel of an operating system. Unfortunately, modern monolithic and hybrid operating systems have massive \gls{tcb}'s with the example of Linux 6.14 rc1 having 40 million \gls{sloc}, which inevitably means that it has many security vulnerabilities and bugs making it and other similar operating systems unfit for use in security sensitive applications.
+
+\section{Operating System}
+\begin{figure}[H]
+    \centering
+    \subfile{../diagrams/operating_system.tex}
+    \caption{Operating System in a System}
+    \label{Operating System in a System}
+\end{figure}
+The operating system is the lowest level of software directly interfacing with hardware and providing user applications a general, usable interface to operate upon. Essentially, it is an abstract machine and a resource manager working with \texttt{policies} to multiplex and allocate hardware resources in a principled way through a simplified system call interface. \citep{Tanenbaum_Bos:mos5.pdf}. 
+
+\subsection{Kernel}
+A key component of any operating system is the operating system kernel. To help distinguish what the kernel is from other application software and even other parts of the operating system it is important to briefly explain how modern processors function. Modern processors have at least two modes, differing on their level of privilege. They also have a set of instructions which they can execute. The mode which the processor is running on determines which subset of the instructions which the processor can run. The highest level of privilege allows the processor to run all instructions. Software which tries to run an instruction which they do not have sufficient privilege for generates a trap (a special exception) which is then handled by software running in privileged mode. \TODO{add a figure about the privileged rings (something like GT's one)}
+
+Although kernels are often referenced synonymously with operating systems, there is an important distinction to be made. Whilst parts of the operating system may run on less privileged modes, the kernel is usually specifically the part of the operating system which runs on the highest level of privilege. This means that the kernel has complete control and access over all computer resources in the system and privileged instructions are delegated to the kernel. This is important as the kernel holds authority over non-privileged software. Regarding the kernel, there are several designs, each having their advantages and disadvantages.
+\begin{figure}[H]
+    \centering
+    \resizebox{\textwidth}{!}{\includegraphics{monolithic.png}}
+    \caption{Types of Kernels \TODO{make image svg}\\ credit: By Golftheman - http://en.wikipedia.org/wiki/Image:OS-structure.svg, Public Domain, https://commons.wikimedia.org/w/index.php?curid=4397379}
+    \label{Types of Kernels}
+\end{figure}
+\section{Monolithic Kernel}
+\subfile{monolithic.tex}
+
+\section{Microkernel}
+\subfile{microkernel.tex}
+\section{Hybrid Kernel}
+\subfile{hybrid.tex}
+
+\section{Exokernels}
+\subfile{exokernel.tex}
+
+\section{Conclusions}
+% This was something but now it can be part of the conclusion i guess.
+While Exokernels and Unikernels represent an interesting but less investigated orthogonal option for secure and performant general purpose operating systems, currently monolithic and hybrid kernels dominate the general purpose operating system space and this is despite the software technologically superior design of microkernels \citep{Liedtke_95}. Even the only exception HongMeng includes many design compromises in order to achieve higher performance, to the point that one may argue that HongMeng is no longer a microkernel but instead a hybrid kernel. Having demonstrated that LionsOS can achieve higher performance than Linux on embedded workflows \citep{Heiser_VCJGNLDZAZWPDB_25}, and with a well-designed microkernel (seL4) as the kernel, is it possible to create a performant operating system?
+
+    \TODO{talk about how exokernels could be a similar solution with some tradeoffs}
+\end{document}

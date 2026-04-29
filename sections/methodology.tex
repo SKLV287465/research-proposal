@@ -97,6 +97,12 @@ The entry point for the two list page replacement algorithm is the \texttt{get\_
 \end{figure}
 Paging follows the flow shown above, except that paging in and out operations are done asynchronously through the blk driver. We facilitate this by having a \texttt{page\_continuations} array which allows the pager to index into using the child id and store the paging data which contains the frame, child id, fault address and a enum which tells the pager when notified that the blk operation is finished whether it was a page in or out. There is also a similar array of integers named \texttt{current\_faults} also indexed by child id that stores the fault address to make sure that the current fault is not serviced multiple times. Since we assume that PD's are singlethreaded, there should only be one VM fault happening at any time for a single PD.
 
+\subsection{Benchmarking}
+The purpose of this implementation is to benchmark how a real pager would perform on a microkernel without any compromises on microkernel design. We will be running a microbenchmark to measure the page fault latency to examine whether the extra \gls{ipc} round trip adds a meaningful cost as opposed to the other costs involved in processing a page fault. A macrobenchmark will show a wider perspective of how the \gls{ipc} and seL4 inherent costs may or may not have influence over the whole workload in the worst case situation in terms of page fault frequency.
+
+\subsection{Further Work}
+The next step as a continuation for this project would be to implement a pager in Djawula as a separate server and benchmark paging in the scope of a truly general purpose operating system.
+
 % LionsOS is currently a static operating system. Essentially, all programs and even memory regions are loaded into memory before the system starts and these programs and importantly memory regions are fixed throughout the lifespan of the system. Whilst this is sufficient for embedded systems with fixed, predictable workloads, it is prohibitive for dynamic workloads, especially for those with changing memory requirements. One of the requirements for a dynamic operating system is a way to bypass this limitation and this can be done through a pager. Therefore I have implemented a \gls{poc} userland pager for LionsOS to test performance and feasibility.
 
 % \subsection{Assumptions and Limitations}

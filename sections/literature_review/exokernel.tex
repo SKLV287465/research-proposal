@@ -1,0 +1,23 @@
+\documentclass[literature_review.tex]{subfiles}
+
+\begin{document}
+
+    An orthogonal kernel design is the exokernel. The exokernel instead of providing an abstracted interface of the hardware resources in the kernel which even microkernels do through \gls{ipc} and virtual memory, it securely exports hardware resources to untrusted library operating systems, seperating the protection and management of hardware resources to be handled by the exokernel and applications respectively \citep{Engler_KO_95}. The motivation for exokernels is threefold: High level abstractions are costly. Applications know best what resource management designs are optimal for their use cases. Finally, library operating systems offer more flexibility than monolithic operating systems. 
+
+    A criticism that can be made about traditional high level operating system abstractions are that they are overly general. Applications that do not require a feature must pay for substantial overhead which those features incur. \TODO{Lampson and Sproul [32], Anderson et
+al. [4] and Massalin and Pu [36]} There is no single best way to implement resource management as the optimality of resource management depends on how applications use these resources \TODO{provide an example of how bad poor resource management can get}. Even when resource management policy is implemented in applications, the hardware abstractions of most kernels hide important information such as page faults and timer interrupts. Even microkernels face this problem, exemplified in the fact that seL4 hides the hardware dirty bit from user applications. \TODO{quote and factcheck} Abstractions also limit the flexibility of applications and this is evident in infeasibility of interesting ideas such as scheduler activations and multiple protection domains within a single address space. 
+
+Following the idea of tailored policies, the exokernel design allows for increased flexibility compared to monolithic kernels, whilst also allowing a high level of detail when implementing these policies compared to microkernels due to a lack of abstractions regarding physical hardware. As the exokernel interfaces to a library operating system, it is conducive to many different library operating systems which can be chosen for the application which will be running, theoretically allowing for optimal performance for the process without extensive reimplementation or modifications to the kernel itself.
+
+Library operating systems as an idea are also highly flexible. Like any operating system, the can be made as compatible and portable as required. Ambitious projects may even decide to skip the implementation of a library operating system and implement their application directly on a exokernel. Since exokernels are untrusted, the library operating system may even decide to trust applications. Similarly to a multi-server operating system design on microkernels, library operating systems can be more easily modified if they are implemented in a similarly modular way. Only the relevant modules are required to be modified in such a scenario.
+
+\TODO{talk about how the design of exokernels are, also about performance and then feasibility as a general purpose operating system and also verifiability}.
+
+
+% exokernels and other stuff like that.
+
+    \subsection{Unikernel}
+    A unikernel can be thought of 
+    \TODO{talk about Unikernels properly here.}
+
+\end{document}

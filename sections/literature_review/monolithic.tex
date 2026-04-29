@@ -1,0 +1,5 @@
+\documentclass[literature_review.tex]{subfiles}
+
+\begin{document}
+A monolithic kernel is a kernel design which has most if not all the operating system components inside the kernel. This usually means that all of these components run in one large address space and the kernel presents a unified system call interface to applications to access hardware resources without having to know specific details. A key advantage of a monolithic kernel is that since everything is inside the kernel, a system call only requires a mode switch into kernel mode unlike the equivalent procedure in a microkernel which requires a context switch. Linux is an example of a monolithic kernel, with all operating system components running in kernel mode. Monolithic kernels like Linux have adopted design elements from microkernels such as loadable kernel modules, which are modules that can be loaded for the operating system during runtime. It is important however to note the key difference being that loadable kernel modules run in kernel mode instead of user mode as would be the case on microkernel systems. \TODO{talk more about monolithic operating systems and give examples}
+\end{document}
